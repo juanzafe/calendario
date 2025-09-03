@@ -45,11 +45,6 @@
   color: rgb(4, 245, 84);
 }
 
-.Day2 {
-  background-color: rgb(53, 53, 95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50px;
-  color: rgb(241, 245, 11);
+.muchas-clases{
+  color: red
 }

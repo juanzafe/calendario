@@ -18,6 +18,12 @@ export class CalendarioAutoescuela {
         return new CalendarioAutoescuela(this.classes);
     }
 
+    resetClass(day:Date): CalendarioAutoescuela {
+        let newCounterValue = 0;
+        this.classes.set(getStartOfDay(day), newCounterValue)
+        return new CalendarioAutoescuela(this.classes)
+    }
+
     totalNumberOfClasses(): number {
         var numberOfClasses = 0;
         this.classes.forEach((value) => { 

@@ -6,7 +6,7 @@ export interface CalendarioAutoescuelaProps {
   calendario: CalendarioAutoescuela;
   addClass: (day: Date) => void;
   removeClass: (day: Date) => void;
-  
+  resetClass: (day: Date) => void;
 }
 
 export function Month (props: CalendarioAutoescuelaProps) {

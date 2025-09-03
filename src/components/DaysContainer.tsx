@@ -31,7 +31,8 @@ function getCalendarGrid(date: Date = new Date()): Date[] {
   
     // Número de días en el mes actual
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-  
+
+    
     // Total de celdas en la cuadrícula del calendario
     const totalCells = 35;
   
