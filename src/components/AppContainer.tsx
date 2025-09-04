@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
 import { Month } from "./Month";
+import LoginWithGoogle from "./Login/LoginWithGoogle";
 
 
 
@@ -69,6 +70,7 @@ function DiasLaborales(props: ContadorProps){
             {selectedNumber && (
               <p>objetivo del mes :{Math.round(selectedNumber * 7.8125)}</p>
             )}
+            <LoginWithGoogle />
           </div>
         );
       };
