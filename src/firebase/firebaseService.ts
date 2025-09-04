@@ -22,3 +22,5 @@ auth.onAuthStateChanged((user) => {
 })
 export const db = getFirestore();
 console.log("====> Firebase initialized. User already logged in ", auth.currentUser)
+
+
