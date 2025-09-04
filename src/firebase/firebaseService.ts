@@ -16,5 +16,9 @@ console.log("Initializing firebase project");
 initializeApp(config);
 
 export const auth = getAuth();
+
+auth.onAuthStateChanged((user) => {
+    console.log("=== auth state changed ", user)
+})
 export const db = getFirestore();
 console.log("====> Firebase initialized. User already logged in ", auth.currentUser)
