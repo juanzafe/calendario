@@ -2,16 +2,29 @@
 import { useState } from "react";
 import { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
 import { Month } from "./Month";
-import LoginWithGoogle from "./Login/LoginWithGoogle";
-import Logout from "./Logout/Logout";
+import { useUser } from "reactfire";
+
+
 
 
 
 export function AppContainer () {
+
+  const {data: user} = useUser();
+
     const [calendario, setCalendario] = useState<CalendarioAutoescuela>(new CalendarioAutoescuela());
     
     return (
+
+
+
     <div  className="AppContainer">
+      <p>
+        bienvenido, {user?.displayName||"Guest"}!
+      </p>
+      <p>
+        Email: {user?.email || "Not provided"}
+      </p>
         <Month calendario={calendario} 
         addClass={ day => {
             console.log("==== add class")
@@ -71,9 +84,10 @@ function DiasLaborales(props: ContadorProps){
             {selectedNumber && (
               <p>objetivo del mes :{Math.round(selectedNumber * 7.8125)}</p>
             )}
-            <LoginWithGoogle />
-            <Logout />
+           
+           
           </div>
+          
         );
       };
       
