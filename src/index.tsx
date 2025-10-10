@@ -7,7 +7,7 @@ import "./firebase/firebaseService";
 import { FirebaseAppProvider } from 'reactfire';
 import FirebaseServices from './firebase/firebaseService';
 import { BrowserRouter } from 'react-router';
-import { config } from './firebase/firabase';
+import { config } from './firebase/firebase';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

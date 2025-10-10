@@ -1,4 +1,17 @@
+import { ref } from "firebase/database";
+import { db, auth } from "../firebase/firebase";
+import { doc, setDoc } from "firebase/firestore"; 
+
+function refresh(count:number, date:Date){
+    setDoc(doc(db, "classespordia", "email", auth.currentUser?.email ?? "noemail",date.toISOString()), {
+        count: count,
+        date: date.toISOString(),
+    });
+}
+
 export class CalendarioAutoescuela {
+
+
 
     constructor(private readonly classes = new Map<number, number>()) {}
 
@@ -7,7 +20,17 @@ export class CalendarioAutoescuela {
         const newCounterValue = currentCounterValue + 1;
         console.log("Añadiendo clase al día ", day, currentCounterValue, newCounterValue)
         this.classes.set(getStartOfDay(day), newCounterValue)
+        
+       refresh(newCounterValue, day);
+
+
         return new CalendarioAutoescuela(this.classes);
+    }
+
+    setClassCounter(day: Date, count: number): CalendarioAutoescuela {
+        this.classes.set(getStartOfDay(day), count)
+        return new CalendarioAutoescuela(this.classes);
+
     }
 
     removeClass(day: Date): CalendarioAutoescuela {
@@ -15,13 +38,20 @@ export class CalendarioAutoescuela {
         let newCounterValue = currentCounterValue - 1;
         newCounterValue = newCounterValue >0 ? newCounterValue : 0;
         this.classes.set(getStartOfDay(day), newCounterValue)
+
+        refresh(newCounterValue, day);
+
         return new CalendarioAutoescuela(this.classes);
     }
 
     resetClass(day:Date): CalendarioAutoescuela {
         let newCounterValue = 0;
         this.classes.set(getStartOfDay(day), newCounterValue)
+
+        refresh(newCounterValue, day);
         return new CalendarioAutoescuela(this.classes)
+
+        
     }
 
     totalNumberOfClasses(): number {
@@ -34,6 +64,10 @@ export class CalendarioAutoescuela {
     calculateClassesForDate(day: Date): number {
         const classesForDay = this.classes.get(getStartOfDay(day)) ?? 0;
         return classesForDay
+    }
+
+    toJSON(){
+        return {classes: this.classes}
     }
 }
 

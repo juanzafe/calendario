@@ -1,9 +1,10 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
 import { Month } from "./Month";
 import { useUser } from "reactfire";
-
+import { getDoc, doc, collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
 
 
@@ -11,8 +12,25 @@ import { useUser } from "reactfire";
 export function AppContainer () {
 
   const {data: user} = useUser();
-
+    console.log({user});
     const [calendario, setCalendario] = useState<CalendarioAutoescuela>(new CalendarioAutoescuela());
+
+    useEffect(() => { 
+      const classesCollectionRef = collection(db, "classespordia", "email", user!.email ?? "noemail");
+      getDocs(classesCollectionRef).then((querySnapshot) => {
+        console.log("==== querySnapshot", querySnapshot);
+        querySnapshot.docs.forEach(doc => {
+          const dateData = doc.data();
+          console.log("=====", dateData)
+          const updatedCalendar = calendario.setClassCounter(new Date(dateData.date), dateData.count);
+          setCalendario(updatedCalendar);
+        })
+      });
+
+    }
+      , []);
+    
+    
     
     return (
 
@@ -20,10 +38,10 @@ export function AppContainer () {
 
     <div  className="AppContainer">
       <p>
-        bienvenido, {user?.displayName||"Guest"}!
+        bienvenido, {user!.displayName||"Guest"}!
       </p>
       <p>
-        Email: {user?.email || "Not provided"}
+        Email: {user!.email || "Not provided"}
       </p>
         <Month calendario={calendario} 
         addClass={ day => {
