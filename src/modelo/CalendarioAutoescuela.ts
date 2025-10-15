@@ -74,6 +74,6 @@ export class CalendarioAutoescuela {
 function getStartOfDay(date: Date): number {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
-    return startOfDay.getDate();
+    return startOfDay.toISOString().split('T').map((v) => v.padStart(2, '0')).join('') as unknown as number;
   }
   

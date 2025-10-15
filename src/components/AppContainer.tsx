@@ -4,7 +4,9 @@ import { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
 import { Month } from "./Month";
 import { useUser } from "reactfire";
 import { getDoc, doc, collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { auth, db } from "../firebase/firebase";
+import { Button } from "@mui/material";
+import { useCounterActions } from "../hooks/use-counter-actions";
 
 
 
@@ -14,6 +16,12 @@ export function AppContainer () {
   const {data: user} = useUser();
     console.log({user});
     const [calendario, setCalendario] = useState<CalendarioAutoescuela>(new CalendarioAutoescuela());
+      
+
+  useCounterActions();
+
+    
+
 
     useEffect(() => { 
       const classesCollectionRef = collection(db, "classespordia", "email", user!.email ?? "noemail");
@@ -102,8 +110,10 @@ function DiasLaborales(props: ContadorProps){
             {selectedNumber && (
               <p>objetivo del mes :{Math.round(selectedNumber * 7.8125)}</p>
             )}
-           
-           
+              <div>
+              <Button onClick={() => { auth.signOut()}}>Cerrar sesión</Button>
+              </div>
+            
           </div>
           
         );
