@@ -1,12 +1,12 @@
 
 import { useEffect, useState } from "react";
-import { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
+import { CalendarioAutoescuela } from '../modelo/CalendarioAutoescuela';
 import { Month } from "./Month";
 import { useUser } from "reactfire";
 import { getDoc, doc, collection, getDocs } from "firebase/firestore";
 import { auth, db } from "../firebase/firebase";
 import { Button } from "@mui/material";
-import { useCounterActions } from "../hooks/use-counter-actions";
+
 
 
 
@@ -16,11 +16,17 @@ export function AppContainer () {
   const {data: user} = useUser();
     console.log({user});
     const [calendario, setCalendario] = useState<CalendarioAutoescuela>(new CalendarioAutoescuela());
-      
+    const [currentDate, setCurrentDate] = useState(new Date());      
 
-  useCounterActions();
+  
 
-    
+  const LogOut = () => {
+  return (
+    <div>
+      <Button onClick={() => auth.signOut()}>Cerrar sesión</Button>
+    </div>
+  );
+}
 
 
     useEffect(() => { 
@@ -68,24 +74,31 @@ setCalendario(updatedCalendario)
             setCalendario(updatedCalendario)
         }}/>
         <main>
-           <Contador calendario={calendario} />
-           <DiasLaborales calendario={calendario} />
+           <Contador calendario={calendario} currentDate={currentDate}/>
+           <DiasLaborales calendario={calendario} currentDate={currentDate} />
+           <LogOut/>
         </main>
         
     </div>
     )       
 }
 
-interface ContadorProps {
-    calendario: CalendarioAutoescuela;
+interface ContadorProps{
+  calendario: CalendarioAutoescuela;
+  currentDate: Date;
+  
 }
-function Contador(props: ContadorProps) {
-    return <div>
-        {props.calendario.totalNumberOfClasses()}
-         
-        </div>
-        
+
+export function Contador({calendario, currentDate}: ContadorProps) {
+  return (
+    <div>
+      {calendario.totalNumberOfClassesInMonth(currentDate)} clases este mes
+    </div>
+  );
 }
+
+
+
 
 function DiasLaborales(props: ContadorProps){
     
@@ -110,9 +123,7 @@ function DiasLaborales(props: ContadorProps){
             {selectedNumber && (
               <p>objetivo del mes :{Math.round(selectedNumber * 7.8125)}</p>
             )}
-              <div>
-              <Button onClick={() => { auth.signOut()}}>Cerrar sesión</Button>
-              </div>
+              
             
           </div>
           

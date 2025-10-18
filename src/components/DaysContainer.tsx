@@ -1,8 +1,12 @@
 import { Day } from "./Day";
 import { CalendarioAutoescuelaProps } from "./Month";
 
-export function   DaysContainer (props: CalendarioAutoescuelaProps){
-    const daysPerMonth = getCalendarGrid();
+interface DaysContainerProps extends CalendarioAutoescuelaProps {
+  currentDate: Date;
+}
+
+export function   DaysContainer (props: DaysContainerProps){
+    const daysPerMonth = getCalendarGrid(props.currentDate);
     const daysComponents = daysPerMonth.map((day) => {
         return <Day num={day} calendarioAutoescuelaProps={props}/>
     });

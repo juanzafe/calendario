@@ -61,6 +61,27 @@ export class CalendarioAutoescuela {
         });
         return numberOfClasses;
     }
+
+    totalNumberOfClassesInMonth(date: Date): number {
+    let numberOfClasses = 0;
+
+    const targetYear = date.getFullYear();
+    const targetMonth = date.getMonth();
+
+    this.classes.forEach((value, key) => {
+        const dayDate = new Date(key); // funciona correctamente ahora
+        if (dayDate.getFullYear() === targetYear &&
+            dayDate.getMonth() === targetMonth) {
+            numberOfClasses += value;
+        }
+    });
+
+    return numberOfClasses;
+}
+
+
+
+
     calculateClassesForDate(day: Date): number {
         const classesForDay = this.classes.get(getStartOfDay(day)) ?? 0;
         return classesForDay
@@ -74,6 +95,6 @@ export class CalendarioAutoescuela {
 function getStartOfDay(date: Date): number {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
-    return startOfDay.toISOString().split('T').map((v) => v.padStart(2, '0')).join('') as unknown as number;
-  }
+    return startOfDay.getTime(); 
+}
   
