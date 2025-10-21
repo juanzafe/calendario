@@ -55,23 +55,41 @@ interface WorkingDaysCounterProps {
   holidays?: string[];
 }
 
-const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({ year, month, holidays= [] }) => {
+const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({ 
+    year,
+    month,
+    holidays= spanishHolidays2025 }) => {
   const [workingDays, setWorkingDays] = useState<number>(0);
+  const [vacationDays, setVacationDays] = useState<number>(0);
+
 
   useEffect(() => {
-    const result = getWorkingDaysWithHolidays(year, month, spanishHolidays2025);
+    const result = getWorkingDaysWithHolidays(year, month, holidays);
     setWorkingDays(result.length);
-  }, [year, month]);
+  }, [year, month, holidays]);
+
+  
+  const handleVacationChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setVacationDays(Number(event.target.value));
+  }
+
+  const adjustedDays = Math.max(workingDays - vacationDays, 0);
 
   return (
-    <div>
-        Días laborables este mes: <strong>{workingDays}</strong>
-        <br />
+    <div style={{ marginTop: "1rem", border: "1px solid #ddd", padding: "1rem", borderRadius: "8px" }}>
+      
+      
+      
 
-        objetivo del mes :{Math.round(workingDays * 7.8125)}
+      <p>Días laborables este mes: <strong>{adjustedDays}</strong></p>
+      <p>Objetivo del mes: <strong>{Math.round(adjustedDays * 7.8125)}</strong></p>
+      <label htmlFor="vacation-select">Días de vacaciones:</label>
+      <select id="vacation-select" value={vacationDays} onChange={handleVacationChange}>
+        {[...Array(workingDays + 1)].map((_, i) => (
+          <option key={i} value={i}>{i}</option>
+        ))}
+      </select>
     </div>
-    
-    
   );
 };
 
