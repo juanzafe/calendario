@@ -2,6 +2,9 @@ import { useState } from "react";
 import { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
 import { DaysContainer } from "./DaysContainer";
 import { MonthHeader } from "./MonthHeader";
+import { Contador } from "./Contador";
+import WorkingDaysCounter from "./WorkingDays";
+
 
 
 export interface CalendarioAutoescuelaProps {
@@ -45,6 +48,8 @@ export function Month(props: CalendarioAutoescuelaProps) {
 
       <MonthHeader {...props} />
       <DaysContainer {...props} currentDate={currentDate}/>
+      <Contador calendario={props.calendario} currentDate={currentDate} />
+      <WorkingDaysCounter year={currentDate.getFullYear()} month={currentDate.getMonth()}  />
       
     </div>
   );

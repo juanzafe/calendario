@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { CalendarioAutoescuela } from '../modelo/CalendarioAutoescuela';
 import { Month } from "./Month";
 import { useUser } from "reactfire";
-import { getDoc, doc, collection, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { auth, db } from "../firebase/firebase";
 import { Button } from "@mui/material";
 
@@ -74,8 +74,8 @@ setCalendario(updatedCalendario)
             setCalendario(updatedCalendario)
         }}/>
         <main>
-           <Contador calendario={calendario} currentDate={currentDate}/>
-           <DiasLaborales calendario={calendario} currentDate={currentDate} />
+           
+           
            <LogOut/>
         </main>
         
@@ -83,53 +83,14 @@ setCalendario(updatedCalendario)
     )       
 }
 
-interface ContadorProps{
-  calendario: CalendarioAutoescuela;
-  currentDate: Date;
-  
-}
-
-export function Contador({calendario, currentDate}: ContadorProps) {
-  return (
-    <div>
-      {calendario.totalNumberOfClassesInMonth(currentDate)} clases este mes
-    </div>
-  );
-}
 
 
 
 
-function DiasLaborales(props: ContadorProps){
-    
-        const [selectedNumber, setSelectedNumber] = useState<number | undefined>(undefined);
-      
-        const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-          setSelectedNumber(Number(event.target.value));
-        };
-      
-        return (
-          <div>
-            <label htmlFor="number-select">Dias laborables este mes:</label>
-            <select id="number-select" value={selectedNumber ?? ''} onChange={handleChange}>
-              <option value="" disabled>Elige un número</option>
-              {[...Array(25)].map((_, index) => (
-                <option key={index + 1} value={index + 1}>
-                  {index + 1}
-                </option>
-              ))}
-            </select>
-      
-            {selectedNumber && (
-              <p>objetivo del mes :{Math.round(selectedNumber * 7.8125)}</p>
-            )}
-              
-            
-          </div>
-          
-        );
-      };
-      
+
+
+
+
       
 
 

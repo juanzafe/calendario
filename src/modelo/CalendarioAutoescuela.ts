@@ -1,4 +1,3 @@
-import { ref } from "firebase/database";
 import { db, auth } from "../firebase/firebase";
 import { doc, setDoc } from "firebase/firestore"; 
 
@@ -69,7 +68,7 @@ export class CalendarioAutoescuela {
     const targetMonth = date.getMonth();
 
     this.classes.forEach((value, key) => {
-        const dayDate = new Date(key); // funciona correctamente ahora
+        const dayDate = new Date(key); 
         if (dayDate.getFullYear() === targetYear &&
             dayDate.getMonth() === targetMonth) {
             numberOfClasses += value;
