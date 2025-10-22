@@ -17,7 +17,7 @@ export interface CalendarioAutoescuelaProps {
 export function Month(props: CalendarioAutoescuelaProps) {
   
   const [currentDate, setCurrentDate] = useState(new Date());
-
+  const [clasesDelMes, setClasesDelMes] = useState(0);
   
   const handlePreviousMonth = () => {
     const prevMonth = new Date(currentDate);
@@ -48,8 +48,11 @@ export function Month(props: CalendarioAutoescuelaProps) {
 
       <MonthHeader {...props} />
       <DaysContainer {...props} currentDate={currentDate}/>
-      <Contador calendario={props.calendario} currentDate={currentDate} />
-      <WorkingDaysCounter year={currentDate.getFullYear()} month={currentDate.getMonth()}  />
+      <Contador calendario={props.calendario} currentDate={currentDate} onChange={setClasesDelMes}/>
+      <WorkingDaysCounter 
+        year={currentDate.getFullYear()} 
+        month={currentDate.getMonth()}
+        clasesDelMesVisible={clasesDelMes} />
       
     </div>
   );

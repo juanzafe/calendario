@@ -1,26 +1,12 @@
 import React, { useState, useEffect } from "react";
-
-
+import { Contador } from "./Contador";
 
 const spanishHolidays2025: string[] = [
-  // Festivos Nacionales / Andalucía
-  "2025-01-01", // Año Nuevo
-  "2025-01-06", // Reyes
-  "2025-02-28", // Día de Andalucía
-  "2025-04-17", // Jueves Santo
-  "2025-04-18", // Viernes Santo
-  "2025-05-01", // Fiesta del Trabajo
-  "2025-08-15", // Asunción de la Virgen
-  "2025-10-13", // Fiesta Nacional de España (trasladada)
-  "2025-11-01", // Todos los Santos
-  "2025-12-06", // Constitución Española
-  "2025-12-08", // Inmaculada Concepción
-  "2025-12-25", // Navidad
-
-  // Festivos locales Málaga
-  "2025-08-19", // Toma de Málaga
-  "2025-09-08", // Virgen de la Victoria
+  "2025-01-01","2025-01-06","2025-02-28","2025-04-17","2025-04-18",
+  "2025-05-01","2025-08-15","2025-10-13","2025-11-01","2025-12-06",
+  "2025-12-08","2025-12-25","2025-08-19","2025-09-08",
 ];
+
 
 
 export function getWorkingDaysWithHolidays(
@@ -47,42 +33,59 @@ export function getWorkingDaysWithHolidays(
   return workingDays;
 }
 
-
-
 interface WorkingDaysCounterProps {
   year: number;
   month: number; 
   holidays?: string[];
+  clasesDelMesVisible: number;
 }
+
 
 const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({ 
     year,
     month,
-    holidays= spanishHolidays2025 }) => {
+    holidays= spanishHolidays2025 ,
+    clasesDelMesVisible}) => {
+
   const [workingDays, setWorkingDays] = useState<number>(0);
+  const [remainingDays, setRemainingDays] = useState<number>(0);
   const [vacationDays, setVacationDays] = useState<number>(0);
 
-
+  
   useEffect(() => {
-    const result = getWorkingDaysWithHolidays(year, month, holidays);
-    setWorkingDays(result.length);
+    const allWorkingDays = getWorkingDaysWithHolidays(year, month, holidays);
+    setWorkingDays(allWorkingDays.length);
+
+    
+    const today = new Date();
+    const remaining = allWorkingDays.filter(dayStr => {
+      const dayDate = new Date(dayStr);
+      return dayDate >= today;
+    });
+    setRemainingDays(remaining.length);
+
+    setVacationDays(0); 
   }, [year, month, holidays]);
 
-  
   const handleVacationChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setVacationDays(Number(event.target.value));
   }
 
   const adjustedDays = Math.max(workingDays - vacationDays, 0);
+  const adjustedRemaining = Math.max(remainingDays - vacationDays, 0) +1;
+  const adjustedClassesNeeded = Math.round(adjustedDays * 7.8125) - clasesDelMesVisible;
+  const adjustedClassesPerDay = adjustedRemaining > 0 ? (adjustedClassesNeeded / adjustedRemaining).toFixed(2) : "0";
+
 
   return (
     <div style={{ marginTop: "1rem", border: "1px solid #ddd", padding: "1rem", borderRadius: "8px" }}>
-      
-      
-      
-
       <p>Días laborables este mes: <strong>{adjustedDays}</strong></p>
+      <p>Días laborables restantes: <strong>{adjustedRemaining}</strong></p>
       <p>Objetivo del mes: <strong>{Math.round(adjustedDays * 7.8125)}</strong></p>
+      <p>Clases necesarias restantes: <strong>{adjustedClassesNeeded}</strong></p>
+      <p>Clases por dia para llegar al objetivo:<strong>{adjustedClassesPerDay}</strong></p>
+
+
       <label htmlFor="vacation-select">Días de vacaciones:</label>
       <select id="vacation-select" value={vacationDays} onChange={handleVacationChange}>
         {[...Array(workingDays + 1)].map((_, i) => (
