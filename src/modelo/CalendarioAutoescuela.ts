@@ -9,6 +9,9 @@ function refresh(count:number, date:Date){
 }
 
 export class CalendarioAutoescuela {
+    getClassesByDay(currentDate: Date) {
+      throw new Error("Method not implemented.");
+    }
 
 
 
@@ -53,13 +56,10 @@ export class CalendarioAutoescuela {
         
     }
 
-    totalNumberOfClasses(): number {
-        var numberOfClasses = 0;
-        this.classes.forEach((value) => { 
-            numberOfClasses += value;
-        });
-        return numberOfClasses;
-    }
+     totalNumberOfClasses(dia: Date): number {
+    const key = getStartOfDay(dia);
+    return this.classes.get(key) ?? 0;
+  }
 
     totalNumberOfClassesInMonth(date: Date): number {
     let numberOfClasses = 0;

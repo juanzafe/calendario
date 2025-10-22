@@ -1,8 +1,12 @@
 import { Day } from "./Day";
 import { CalendarioAutoescuelaProps } from "./Month";
 
-interface DaysContainerProps extends CalendarioAutoescuelaProps {
+interface DaysContainerProps {
   currentDate: Date;
+  calendario: CalendarioAutoescuelaProps["calendario"];
+  addClass: CalendarioAutoescuelaProps["addClass"];
+  removeClass: CalendarioAutoescuelaProps["removeClass"];
+  resetClass: CalendarioAutoescuelaProps["resetClass"];
 }
 
 export function   DaysContainer (props: DaysContainerProps){
