@@ -13,13 +13,6 @@ export const config = {
 
 };
 
-<<<<<<< HEAD
-const app= initializeApp(config)
-
-export const auth= getAuth(app)
-export const db= getFirestore(app)
-=======
 const app = initializeApp(config);
 export const auth = getAuth (app);
 export const db = getFirestore(app);
->>>>>>> 68ef435
