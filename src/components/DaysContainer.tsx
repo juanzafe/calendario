@@ -14,32 +14,47 @@ export function DaysContainer(props: DaysContainerProps) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  // Días del mes actual
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  // Día de la semana del primer día del mes (ajustando para empezar en lunes)
   const firstDay = new Date(year, month, 1);
-  let startDay = firstDay.getDay();
-  startDay = (startDay + 6) % 7; // convierte domingo=0 → domingo=6
-
-  // Calculamos celdas necesarias: solo las que se usen realmente
+  let startDay = (firstDay.getDay() + 6) % 7; // Ajusta para empezar en lunes
   const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
 
   const cells = Array.from({ length: totalCells }, (_, index) => {
     const dayNumber = index - startDay + 1;
-    if (dayNumber < 1 || dayNumber > daysInMonth) return null;
-    return new Date(year, month, dayNumber);
+
+    // Día del mes actual
+    if (dayNumber >= 1 && dayNumber <= daysInMonth) {
+      return { date: new Date(year, month, dayNumber), type: "current" };
+    }
+
+    // Días del mes anterior
+    if (dayNumber < 1) {
+      const prevMonthDate = new Date(year, month, dayNumber);
+      return { date: prevMonthDate, type: "prev" };
+    }
+
+    // Días del mes siguiente
+    const nextMonthDate = new Date(year, month, dayNumber);
+    return { date: nextMonthDate, type: "next" };
   });
 
   return (
-    <div className="grid grid-cols-7 gap-[1px] w-full bg-slate-900 p-[1px] flex-grow">
-      {cells.map((day, index) =>
-        day ? (
-          <div key={index} className="aspect-[1/1]">
-            <Day num={day} calendarioAutoescuelaProps={props} />
+    <div className="grid grid-cols-7 gap-[1px] w-full bg-gray-200 p-[1px] max-h-[85vh]">
+      {cells.map(({ date, type }, index) =>
+        type === "current" ? (
+          <div
+            key={index}
+            className="flex items-center justify-center h-[36px] sm:h-[44px] md:h-[48px] lg:h-[52px]"
+          >
+            <Day num={date} calendarioAutoescuelaProps={props} />
           </div>
         ) : (
-          <div key={index} className="aspect-[1/1] bg-slate-900" />
+          <div
+            key={index}
+            className="flex items-center justify-center h-[36px] sm:h-[44px] md:h-[48px] lg:h-[52px] bg-gray-50 border border-gray-200 text-gray-400 text-xs sm:text-sm select-none"
+          >
+            {date.getDate()}
+          </div>
         )
       )}
     </div>

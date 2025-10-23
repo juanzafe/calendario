@@ -1,4 +1,5 @@
 import { CalendarioAutoescuelaProps } from "./Month";
+import { Plus, Minus, RotateCcw } from "lucide-react"; // 👈 nuevos iconos modernos
 
 type DayProps = {
   num: Date;
@@ -11,48 +12,49 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
 
   const getClassByCantidad = (cantidad: number): string => {
     if (cantidad < 8)
-      return "bg-blue-100 border border-blue-300 text-blue-800"; // pocas clases
-    return "bg-red-100 border border-red-300 text-red-800"; // muchas clases
+      return "bg-blue-100 border border-blue-300 text-blue-800";
+    return "bg-red-100 border border-red-300 text-red-800";
   };
 
   return (
     <div
       key={num.toDateString()}
-      className={`flex flex-col items-center justify-between rounded-md shadow-sm hover:shadow-md transition-all duration-200 ${getClassByCantidad(
+      className={`flex items-center justify-between rounded-sm shadow-sm transition-all duration-200 ${getClassByCantidad(
         clasesDelDia
-      )} w-full h-full p-[2px] sm:p-[4px] text-[10px] sm:text-xs`}
+      )} w-full h-full px-[4px] sm:px-[6px]`}
     >
-      {/* Día del mes */}
-      <div className="font-semibold text-xs sm:text-sm">{num.getDate()}</div>
-
-      {/* Número de clases */}
-      <div className="font-medium text-[9px] sm:text-xs mb-[2px]">
-        {clasesDelDia} clase{clasesDelDia !== 1 ? "s" : ""}
+      {/* IZQUIERDA: día y clases */}
+      <div className="flex flex-col items-start leading-tight">
+        <div className="font-bold text-[12px] sm:text-[14px]">{num.getDate()}</div>
+        <div className="text-[11px] sm:text-[12px] font-medium">
+          {clasesDelDia} clase{clasesDelDia !== 1 ? "s" : ""}
+        </div>
       </div>
 
-      {/* Botones */}
-      <div className="flex gap-[2px] sm:gap-1">
+      {/* DERECHA: botones con íconos Lucide */}
+      <div className="flex items-center justify-end gap-[4px] sm:gap-[6px]">
         <button
           onClick={() => calendarioAutoescuelaProps.addClass(num)}
-          className="bg-green-500 hover:bg-green-600 text-white rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-[9px]"
+          className="text-green-600 hover:text-green-800 transition-colors"
+          title="Añadir clase"
         >
-          ⬆️
+          <Plus size={16} />
         </button>
         <button
           onClick={() => calendarioAutoescuelaProps.removeClass(num)}
-          className="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-[9px]"
+          className="text-yellow-600 hover:text-yellow-800 transition-colors"
+          title="Quitar clase"
         >
-          ⬇️
+          <Minus size={16} />
+        </button>
+        <button
+          onClick={() => calendarioAutoescuelaProps.resetClass(num)}
+          className="text-gray-600 hover:text-gray-900 transition-colors"
+          title="Resetear clases"
+        >
+          <RotateCcw size={15} />
         </button>
       </div>
-
-      {/* Botón Reset */}
-      <button
-        onClick={() => calendarioAutoescuelaProps.resetClass(num)}
-        className="text-[8px] sm:text-[10px] text-gray-600 hover:text-gray-900 underline mt-[2px]"
-      >
-        Reset
-      </button>
     </div>
   );
 }

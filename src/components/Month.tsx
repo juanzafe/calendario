@@ -4,7 +4,7 @@ import { DaysContainer } from "./DaysContainer";
 import { MonthHeader } from "./MonthHeader";
 import { Contador } from "./Contador";
 import WorkingDaysCounter from "./WorkingDays";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 
 export interface CalendarioAutoescuelaProps {
   calendario: CalendarioAutoescuela;
@@ -40,23 +40,31 @@ export function Month(props: CalendarioAutoescuelaProps) {
   });
 
   return (
-    <div className="w-full h-full flex flex-col bg-gray-100 text-gray-900 overflow-hidden">
-      {/* Header del mes */}
-      <div className="flex justify-between items-center px-4 py-2 bg-emerald-700 text-white text-lg font-medium shadow-sm">
+    <div className="w-full h-full flex flex-col bg-gradient-to-b from-emerald-50 to-white text-gray-900 rounded-xl shadow-sm border border-emerald-100 overflow-hidden">
+      
+      {/* Header superior con navegación */}
+      <div className="flex justify-between items-center px-4 py-2 bg-emerald-100 text-emerald-800 border-b border-emerald-200">
         <button
           onClick={handlePreviousMonth}
-          className="p-1.5 hover:bg-emerald-600 rounded-full transition"
+          className="p-1.5 hover:bg-emerald-200 rounded-full transition"
+          title="Mes anterior"
         >
-          <ArrowLeft size={18} className="text-white" />
+          <ChevronLeft size={20} />
         </button>
 
-        <h1 className="capitalize tracking-wide text-center">{nombreMes}</h1>
+        <div className="flex items-center gap-2 select-none">
+          <Calendar size={18} className="text-emerald-700" />
+          <h1 className="capitalize tracking-wide text-lg font-semibold">
+            {nombreMes}
+          </h1>
+        </div>
 
         <button
           onClick={handleNextMonth}
-          className="p-1.5 hover:bg-emerald-600 rounded-full transition"
+          className="p-1.5 hover:bg-emerald-200 rounded-full transition"
+          title="Mes siguiente"
         >
-          <ArrowRight size={18} className="text-white" />
+          <ChevronRight size={20} />
         </button>
       </div>
 
@@ -71,7 +79,7 @@ export function Month(props: CalendarioAutoescuelaProps) {
       </div>
 
       {/* Contadores */}
-      <div className="bg-white text-sm py-2 px-3 border-t border-gray-200">
+      <div className="bg-white text-sm py-2 px-3 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <Contador
           calendario={props.calendario}
           currentDate={currentDate}

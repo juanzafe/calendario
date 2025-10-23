@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { CalendarDays, Sun, Target, ClipboardList, Plane } from "lucide-react";
+import { motion } from "framer-motion";
+import { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
 
 const spanishHolidays2025: string[] = [
   "2025-01-01", "2025-01-06", "2025-02-28", "2025-04-17", "2025-04-18",
@@ -52,11 +55,9 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
     const allWorkingDays = getWorkingDaysWithHolidays(year, month, holidays);
     setWorkingDays(allWorkingDays.length);
 
-    // 🔹 Normaliza la fecha actual para incluir el día de hoy si aplica
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // 🔹 Contar días laborables desde hoy (inclusive)
     const remaining = allWorkingDays.filter((dayStr) => {
       const dayDate = new Date(dayStr);
       dayDate.setHours(0, 0, 0, 0);
@@ -67,7 +68,6 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
     setVacationDays(0);
   }, [year, month, holidays]);
 
-  // 🔹 Ajustes por vacaciones
   const handleVacationChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -84,45 +84,73 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
       : "0";
 
   return (
-    <div
-      style={{
-        marginTop: "1rem",
-        border: "1px solid #ddd",
-        padding: "1rem",
-        borderRadius: "8px",
-      }}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm p-4 mt-4 text-gray-800"
     >
-      <p>
-        Días laborables este mes: <strong>{adjustedDays}</strong>
-      </p>
-      <p>
-        Días laborables restantes: <strong>{adjustedRemaining}</strong>
-      </p>
-      <p>
-        Objetivo del mes: <strong>{Math.round(adjustedDays * 7.8125)}</strong>
-      </p>
-      <p>
-        Clases necesarias restantes: <strong>{adjustedClassesNeeded}</strong>
-      </p>
-      <p>
-        Clases por día para llegar al objetivo:{" "}
-        <strong>{adjustedClassesPerDay}</strong>
-      </p>
+      <h2 className="flex items-center gap-2 text-emerald-800 font-semibold text-lg mb-3">
+        <ClipboardList size={20} />
+        Resumen del mes
+      </h2>
 
-      <label htmlFor="vacation-select">Días de vacaciones:</label>
-      <select
-        id="vacation-select"
-        value={vacationDays}
-        onChange={handleVacationChange}
-        style={{ marginLeft: "0.5rem" }}
-      >
-        {[...Array(workingDays + 1)].map((_, i) => (
-          <option key={i} value={i}>
-            {i}
-          </option>
-        ))}
-      </select>
-    </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+        <div className="flex items-center gap-2 bg-white p-2 rounded-md border border-gray-200">
+          <CalendarDays size={18} className="text-emerald-600" />
+          <span>
+            Días laborables: <strong>{adjustedDays}</strong>
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 bg-white p-2 rounded-md border border-gray-200">
+          <Sun size={18} className="text-emerald-600" />
+          <span>
+            Días restantes: <strong>{adjustedRemaining}</strong>
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 bg-white p-2 rounded-md border border-gray-200">
+          <Target size={18} className="text-emerald-600" />
+          <span>
+            Objetivo: <strong>{Math.round(adjustedDays * 7.8125)} clases</strong>
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 bg-white p-2 rounded-md border border-gray-200">
+          <CalendarDays size={18} className="text-emerald-600" />
+          <span>
+            Faltan: <strong>{adjustedClassesNeeded}</strong> clases
+          </span>
+        </div>
+
+        <div className="col-span-1 sm:col-span-2 flex items-center justify-between bg-white p-2 rounded-md border border-gray-200">
+          <span>
+            Clases necesarias por día:{" "}
+            <strong>{adjustedClassesPerDay}</strong>
+          </span>
+
+          <div className="flex items-center gap-2">
+            <Plane size={18} className="text-emerald-600" />
+            <label htmlFor="vacation-select" className="text-gray-700 text-sm">
+              Vacaciones:
+            </label>
+            <select
+              id="vacation-select"
+              value={vacationDays}
+              onChange={handleVacationChange}
+              className="border border-emerald-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            >
+              {[...Array(workingDays + 1)].map((_, i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
