@@ -4,7 +4,9 @@ import { CalendarioAutoescuelaProps } from "./Month";
 export function MonthHeader (props: CalendarioAutoescuelaProps) {
 
     return (
+      
       <div className="MonthHeader">
+        
         <DayHeader label={"L"} /> 
         <DayHeader label={"M"} /> 
 

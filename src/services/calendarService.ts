@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 
 import { doc, onSnapshot, deleteDoc, collection, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/firebase";
+=======
+import { auth, db } from "../firebase/firebase";
+import { doc, onSnapshot, deleteDoc, collection, setDoc } from "firebase/firestore";
+
+>>>>>>> 68ef435
 
 
 export async function saveClass(day: Date, data: { title: string; count: number }) {
