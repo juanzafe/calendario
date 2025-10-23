@@ -1,50 +1,50 @@
-.App {
-  text-align: center;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-.AppContainer {
-  width: 100vw;
-  height: 100vh;
-}
 
-.MonthHeader {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  height: 48px;
-  background-color: rgb(6, 116, 6);
-  align-items: center;
-  color: white;
-}
-
-.DayHeader {
-  border: solid;
-  border-width: 2px;
-  border-color: white;
-  width: 100%;
+html, body, #root {
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
+}
+/* Estilos globales */
+@layer base {
+  body {
+    @apply bg-gray-100 text-gray-900 h-screen w-screen overflow-hidden;
+  }
 }
 
-.DaysContainer {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr); /* 7 columnas */
-  gap: 2px;
-  width: 100%;
-  height: 100%;
+/* Componentes personalizados */
+@layer components {
+ .AppContainer {
+  @apply w-screen min-h-screen flex flex-col items-center justify-start overflow-y-auto;
 }
 
-.Day {
-  background-color: rgb(53, 53, 95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50px;
-  color: rgb(4, 245, 84);
-}
+  /* 🔹 Cuadrícula de días: más compacta */
+  .DaysContainer {
+    @apply grid grid-cols-7 gap-[1px] w-full h-full bg-gray-300;
+  }
 
-.muchas-clases{
-  color: red
+  /* 🔹 Día individual: más compacto y proporcional */
+  .Day {
+    @apply flex flex-col items-center justify-center text-green-400 bg-indigo-900 
+           rounded-sm text-sm aspect-square hover:brightness-110 transition-all duration-150;
+  }
+
+  /* 🔹 Encabezado de los días (L, M, X, etc.) */
+  .MonthHeader {
+    @apply grid grid-cols-7 text-center bg-green-800 text-white font-semibold py-1 text-sm;
+  }
+
+  .DayHeader {
+    @apply flex items-center justify-center border border-green-700 py-1;
+  }
+
+  .pocas-clases {
+    @apply bg-blue-100 text-blue-800 border border-blue-400;
+  }
+
+  .muchas-clases {
+    @apply bg-red-100 text-red-800 border border-red-400;
+  }
 }

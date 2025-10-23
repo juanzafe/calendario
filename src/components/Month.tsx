@@ -4,13 +4,14 @@ import { DaysContainer } from "./DaysContainer";
 import { MonthHeader } from "./MonthHeader";
 import { Contador } from "./Contador";
 import WorkingDaysCounter from "./WorkingDays";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export interface CalendarioAutoescuelaProps {
   calendario: CalendarioAutoescuela;
   addClass: (day: Date) => void;
   removeClass: (day: Date) => void;
   resetClass: (day: Date) => void;
-  onMonthChange?: (date: Date) => void; 
+  onMonthChange?: (date: Date) => void;
 }
 
 export function Month(props: CalendarioAutoescuelaProps) {
@@ -29,7 +30,6 @@ export function Month(props: CalendarioAutoescuelaProps) {
     setCurrentDate(nextMonth);
   };
 
-  
   useEffect(() => {
     props.onMonthChange?.(currentDate);
   }, [currentDate]);
@@ -39,48 +39,50 @@ export function Month(props: CalendarioAutoescuelaProps) {
     year: "numeric",
   });
 
-  const diasDelMes = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    0
-  ).getDate();
-
-  const clasesPorDia = Array.from({ length: diasDelMes }, (_, i) => {
-    const dia = new Date(currentDate.getFullYear(), currentDate.getMonth(), i + 1);
-    return {
-      dia: i + 1,
-      total: props.calendario.totalNumberOfClasses(dia),
-    };
-  });
-
   return (
-    <div className="month-container" style={{ textAlign: "center" }}>
-      <div
-        className="month-header"
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "1rem",
-        }}
-      >
-        <button onClick={handlePreviousMonth}>⬅️</button>
-        <h1 style={{ textTransform: "capitalize", margin: "0" }}>{nombreMes}</h1>
-        <button onClick={handleNextMonth}>➡️</button>
+    <div className="w-full h-full flex flex-col bg-gray-100 text-gray-900 overflow-hidden">
+      {/* Header del mes */}
+      <div className="flex justify-between items-center px-4 py-2 bg-emerald-700 text-white text-lg font-medium shadow-sm">
+        <button
+          onClick={handlePreviousMonth}
+          className="p-1.5 hover:bg-emerald-600 rounded-full transition"
+        >
+          <ArrowLeft size={18} className="text-white" />
+        </button>
+
+        <h1 className="capitalize tracking-wide text-center">{nombreMes}</h1>
+
+        <button
+          onClick={handleNextMonth}
+          className="p-1.5 hover:bg-emerald-600 rounded-full transition"
+        >
+          <ArrowRight size={18} className="text-white" />
+        </button>
       </div>
 
-      <MonthHeader {...props} />
-      <DaysContainer {...props} currentDate={currentDate} />
-      <Contador
-        calendario={props.calendario}
-        currentDate={currentDate}
-        onChange={setClasesDelMes}
-      />
-      <WorkingDaysCounter
-        year={currentDate.getFullYear()}
-        month={currentDate.getMonth()}
-        clasesDelMesVisible={clasesDelMes}
-      />
+      {/* Encabezado de días */}
+      <div className="flex-shrink-0">
+        <MonthHeader {...props} />
+      </div>
+
+      {/* Días del mes */}
+      <div className="flex-grow w-full">
+        <DaysContainer {...props} currentDate={currentDate} />
+      </div>
+
+      {/* Contadores */}
+      <div className="bg-white text-sm py-2 px-3 border-t border-gray-200">
+        <Contador
+          calendario={props.calendario}
+          currentDate={currentDate}
+          onChange={setClasesDelMes}
+        />
+        <WorkingDaysCounter
+          year={currentDate.getFullYear()}
+          month={currentDate.getMonth()}
+          clasesDelMesVisible={clasesDelMes}
+        />
+      </div>
     </div>
   );
 }

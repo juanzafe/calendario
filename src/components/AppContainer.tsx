@@ -121,7 +121,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
           const updated = calendario.resetClass(day);
           setCalendario(updated);
         }}
-        onMonthChange={(date) => setCurrentDate(date)} // ✅ sincronización
+        onMonthChange={(date) => setCurrentDate(date)} 
       />
 
       <Button

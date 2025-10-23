@@ -9,64 +9,39 @@ interface DaysContainerProps {
   resetClass: CalendarioAutoescuelaProps["resetClass"];
 }
 
-export function   DaysContainer (props: DaysContainerProps){
-    const daysPerMonth = getCalendarGrid(props.currentDate);
-    const daysComponents = daysPerMonth.map((day) => {
-        return <Day num={day} calendarioAutoescuelaProps={props}/>
-    });
-    return (
-        <div className="DaysContainer">
-            {daysComponents}
-        </div>
+export function DaysContainer(props: DaysContainerProps) {
+  const { currentDate } = props;
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
 
-    )
+  // Días del mes actual
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+  // Día de la semana del primer día del mes (ajustando para empezar en lunes)
+  const firstDay = new Date(year, month, 1);
+  let startDay = firstDay.getDay();
+  startDay = (startDay + 6) % 7; // convierte domingo=0 → domingo=6
+
+  // Calculamos celdas necesarias: solo las que se usen realmente
+  const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
+
+  const cells = Array.from({ length: totalCells }, (_, index) => {
+    const dayNumber = index - startDay + 1;
+    if (dayNumber < 1 || dayNumber > daysInMonth) return null;
+    return new Date(year, month, dayNumber);
+  });
+
+  return (
+    <div className="grid grid-cols-7 gap-[1px] w-full bg-slate-900 p-[1px] flex-grow">
+      {cells.map((day, index) =>
+        day ? (
+          <div key={index} className="aspect-[1/1]">
+            <Day num={day} calendarioAutoescuelaProps={props} />
+          </div>
+        ) : (
+          <div key={index} className="aspect-[1/1] bg-slate-900" />
+        )
+      )}
+    </div>
+  );
 }
-
-
-
-function getCalendarGrid(date: Date = new Date()): Date[] {
-    const year = date.getFullYear();
-    const month = date.getMonth(); // 0-indexed
-  
-    // Primer día del mes actual
-    const firstDayOfMonth = new Date(year, month, 1);
-    // Día de la semana (0 = domingo, 1 = lunes, ..., 6 = sábado)
-    let startDay = firstDayOfMonth.getDay();
-  
-    // Ajuste para que la semana comience en lunes (0 = lunes, ..., 6 = domingo)
-    startDay = (startDay + 6) % 7;
-  
-    // Número de días en el mes actual
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    
-    // Total de celdas en la cuadrícula del calendario
-    const totalCells = 35;
-  
-    // Número de días del mes anterior que necesitamos para rellenar el principio
-    const prevMonthDays = startDay;
-  
-    // Número de días del mes siguiente que necesitamos para completar las 42 celdas
-    const nextMonthDays = totalCells - (prevMonthDays + daysInMonth);
-  
-    const grid: Date[] = [];
-  
-    // Días del mes anterior
-    for (let i = prevMonthDays - 1; i >= 0; i--) {
-      grid.push(new Date(year, month, -i));
-    }
-  
-    // Días del mes actual
-    for (let i = 1; i <= daysInMonth; i++) {
-      grid.push(new Date(year, month, i));
-    }
-  
-    // Días del mes siguiente
-    for (let i = 1; i <= nextMonthDays; i++) {
-      grid.push(new Date(year, month + 1, i));
-    }
-  
-    return grid;
-  }
-  
