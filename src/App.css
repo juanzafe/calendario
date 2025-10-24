@@ -4,10 +4,11 @@
 
 
 html, body, #root {
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
+  height: auto;
+  overflow-y: auto;
 }
-/* Estilos globales */
+
 @layer base {
   body {
     @apply bg-gray-100 text-gray-900 h-screen w-screen overflow-hidden;

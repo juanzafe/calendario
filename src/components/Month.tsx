@@ -78,7 +78,7 @@ export function Month(props: CalendarioAutoescuelaProps) {
         <DaysContainer {...props} currentDate={currentDate} />
       </div>
 
-      {/* Contadores */}
+      
       <div className="bg-white text-sm py-2 px-3 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <Contador
           calendario={props.calendario}
