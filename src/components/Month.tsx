@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
 import { DaysContainer } from "./DaysContainer";
 import { MonthHeader } from "./MonthHeader";
-import { Contador } from "./Contador";
-import WorkingDaysCounter from "./WorkingDays";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import WorkingDaysCounter from "./WorkingDaysCounter";
 
 export interface CalendarioAutoescuelaProps {
   calendario: CalendarioAutoescuela;
@@ -32,7 +31,9 @@ export function Month(props: CalendarioAutoescuelaProps) {
 
   useEffect(() => {
     props.onMonthChange?.(currentDate);
-  }, [currentDate]);
+    const clasesMes = props.calendario.totalNumberOfClassesInMonth(currentDate);
+    setClasesDelMes(clasesMes);
+  }, [currentDate, props.calendario]);
 
   const nombreMes = currentDate.toLocaleString("es-ES", {
     month: "long",
@@ -41,7 +42,6 @@ export function Month(props: CalendarioAutoescuelaProps) {
 
   return (
     <div className="w-full h-full flex flex-col bg-gradient-to-b from-emerald-50 to-white text-gray-900 rounded-xl shadow-sm border border-emerald-100 overflow-hidden">
-      
       {/* Header superior con navegación */}
       <div className="flex justify-between items-center px-4 py-2 bg-emerald-100 text-emerald-800 border-b border-emerald-200">
         <button
@@ -78,18 +78,17 @@ export function Month(props: CalendarioAutoescuelaProps) {
         <DaysContainer {...props} currentDate={currentDate} />
       </div>
 
-      
-      <div className="bg-white text-sm py-2 px-3 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <Contador
-          calendario={props.calendario}
-          currentDate={currentDate}
-          onChange={setClasesDelMes}
-        />
-        <WorkingDaysCounter
-          year={currentDate.getFullYear()}
-          month={currentDate.getMonth()}
-          clasesDelMesVisible={clasesDelMes}
-        />
+      {/* Footer con resumen y objetivos */}
+      <div className="bg-white border-t border-gray-200 py-3 px-4 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+       
+        <div className="flex-1 bg-emerald-50 border border-emerald-100 rounded-lg p-3 text-sm shadow-sm">
+          <WorkingDaysCounter
+            year={currentDate.getFullYear()}
+            month={currentDate.getMonth()}
+            clasesDelMesVisible={clasesDelMes}
+            
+          />
+        </div>
       </div>
     </div>
   );

@@ -89,9 +89,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
     </Button>
   );
 
-  // ----------------------------------------------------------------
-  // VISTA DE SOLO GRÁFICA
-  // ----------------------------------------------------------------
+  
   if (showOnlyChart) {
     const nombreMes = currentDate.toLocaleString("es-ES", {
       month: "long",
@@ -100,32 +98,50 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 
     return (
       <div className="min-h-screen w-screen bg-gradient-to-b from-gray-50 to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 py-10">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-          <div className="flex items-center gap-2">
-            <BarChart3 size={28} className="text-emerald-700" />
-            <h1 className="text-3xl font-semibold">
-              Gráfica de clases – {nombreMes}
-            </h1>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
-            <Button
-              variant="outlined"
-              startIcon={<ArrowLeft size={18} />}
-              onClick={() => navigate("/admin")}
-              sx={{
-                textTransform: "none",
-                borderRadius: 4,
-                fontWeight: 500,
-              }}
-            >
-              Volver al calendario
-            </Button>
-            <LogOut />
-          </div>
-        </div>
 
-        {/* Chart section */}
+
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+  {/* 🔹 Título */}
+  <div className="flex items-center gap-2">
+    <BarChart3 size={28} className="text-emerald-700" />
+    <h1 className="text-3xl font-semibold">
+      Gráfica de clases – {nombreMes}
+    </h1>
+  </div>
+
+  {/* 🔹 Botones alineados perfectamente */}
+  <div className="flex flex-row flex-wrap items-center justify-end gap-3 mt-4 sm:mt-0">
+    <div className="flex items-center">
+      <Button
+        variant="outlined"
+        startIcon={<ArrowLeft size={18} />}
+        onClick={() => navigate("/admin")}
+        sx={{
+          textTransform: "none",
+          borderRadius: 4,
+          fontWeight: 500,
+          height: "40px",
+          minWidth: "200px",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        Volver al calendario
+      </Button>
+    </div>
+
+    {/* 🔹 Contenedor que fuerza alineación del LogOut */}
+    <div className="flex items-center" style={{ height: "40px", marginTop: 0 }}>
+      <div style={{ marginTop: 0 }}>
+        <LogOut />
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  
         <div className="w-full bg-white rounded-xl shadow p-6 border border-gray-200">
           <ClasesChart clasesPorDia={clasesPorDia} />
         </div>
@@ -133,9 +149,6 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
     );
   }
 
-  // ----------------------------------------------------------------
-  // VISTA PRINCIPAL DEL CALENDARIO
-  // ----------------------------------------------------------------
   return (
     <div className="min-h-screen w-screen bg-gradient-to-b from-white to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 py-10">
       {/* Header */}
@@ -153,7 +166,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
         <LogOut />
       </header>
 
-      {/* Calendario */}
+      
       <section className="bg-white rounded-xl shadow-md border border-gray-200 p-6 w-full">
         <Month
           calendario={calendario}
@@ -173,7 +186,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
         />
       </section>
 
-      {/* Botón para ver gráfica */}
+      
       <div className="flex justify-center mt-10">
         <Button
           variant="contained"
