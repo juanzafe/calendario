@@ -18,7 +18,7 @@ export function Month(props: CalendarioAutoescuelaProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [clasesDelMes, setClasesDelMes] = useState(0);
 
-  // 🟢 Estado local para jornada, con persistencia en localStorage
+  
   const [jornada, setJornada] = useState<"media" | "completa">(
     () => (localStorage.getItem("jornada") as "media" | "completa") || "media"
   );
@@ -87,27 +87,21 @@ export function Month(props: CalendarioAutoescuelaProps) {
       {/* 🔹 CONTENEDOR DE DÍAS */}
       <div className="flex-grow w-full">
         <DaysContainer
-  {...props}
-  currentDate={currentDate}
-  jornada={props.jornada ?? "media"} // ✅ valor por defecto para evitar undefined
-/>
- 
+          {...props}
+          currentDate={currentDate}
+          jornada={jornada}
+        />
       </div>
 
-      {/* 🔹 PIE CON CONTROLES Y RESUMEN */}
-      <div className="bg-white border-t border-gray-200 py-3 px-4 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-
-       
-
-        {/* 🔹 Contador de días y clases */}
-        <div className="flex-1 bg-emerald-50 border border-emerald-100 rounded-lg p-3 text-sm shadow-sm">
-          <WorkingDaysCounter
-            year={currentDate.getFullYear()}
-            month={currentDate.getMonth()}
-            clasesDelMesVisible={clasesDelMes}
-            jornada={jornada}
-          />
-        </div>
+      {/* 🔹 PIE CON RESUMEN */}
+      <div className="bg-white border-t border-gray-200 py-3 px-4">
+        <WorkingDaysCounter
+          year={currentDate.getFullYear()}
+          month={currentDate.getMonth()}
+          clasesDelMesVisible={clasesDelMes}
+          jornada={jornada}
+          setJornada={setJornada} 
+        />
       </div>
     </div>
   );

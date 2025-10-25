@@ -4,11 +4,11 @@ import {
   Sun,
   Target,
   ClipboardList,
-  Plane,
   GraduationCap,
   Clock,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import VacacionesYJornada from "./VacacionesYJornada";
 
 const spanishHolidays2025: string[] = [
   "2025-01-01", "2025-01-06", "2025-02-28", "2025-04-17", "2025-04-18",
@@ -43,6 +43,7 @@ interface WorkingDaysCounterProps {
   holidays?: string[];
   clasesDelMesVisible: number;
   jornada: "media" | "completa";
+  setJornada: (value: "media" | "completa") => void;
 }
 
 const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
@@ -51,6 +52,7 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
   holidays = spanishHolidays2025,
   clasesDelMesVisible,
   jornada,
+  setJornada,
 }) => {
   const [workingDays, setWorkingDays] = useState(0);
   const [remainingDays, setRemainingDays] = useState(0);
@@ -70,13 +72,8 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
     });
 
     setRemainingDays(remaining.length);
-  }, [year, month, holidays]);
+  }, [year, month, holidays, jornada]);
 
-  const handleVacationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setVacationDays(Number(e.target.value));
-  };
-
- 
   const valorPorDia = jornada === "media" ? 7.8125 : 12.5;
 
   const adjustedDays = Math.max(workingDays - vacationDays, 0);
@@ -162,31 +159,14 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
         </div>
       </div>
 
-      {/* ✈️ VACACIONES */}
+      {/* ✈️ VACACIONES + JORNADA */}
       <div className="flex-1">
-        <div className={cardBase}>
-          <div className="flex items-center gap-2 text-emerald-800 font-semibold mb-2">
-            <Plane size={16} />
-            <span>Vacaciones</span>
-          </div>
-          <div className="bg-white rounded-md border border-gray-200 p-3 flex justify-between items-center">
-            <span className="text-gray-700">
-              Días: <strong>{vacationDays}</strong>
-            </span>
-            <select
-              id="vacation-select-compact"
-              value={vacationDays}
-              onChange={handleVacationChange}
-              className="border border-emerald-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
-            >
-              {[...Array(workingDays + 1)].map((_, i) => (
-                <option key={i} value={i}>
-                  {i}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <VacacionesYJornada
+          workingDays={workingDays}
+          jornada={jornada}
+          setJornada={setJornada}
+          onVacationChange={setVacationDays}
+        />
       </div>
     </motion.div>
   );

@@ -15,7 +15,7 @@ import {
   ArrowLeft,
   Settings,
 } from "lucide-react";
-import { SettingsModal } from "./SettingsModal";
+
 
 interface AppContainerProps {
   showOnlyChart?: boolean;
@@ -27,7 +27,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showSettings, setShowSettings] = useState(false);
 
-  // ✅ Jornada persistente (lee y guarda en localStorage)
+  
   const [jornada, setJornada] = useState<"media" | "completa">(
     () => (localStorage.getItem("jornada") as "media" | "completa") || "media"
   );
@@ -162,14 +162,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setShowSettings(true)}
-            className="p-2 rounded-full hover:bg-emerald-100 transition-colors"
-            title="Ajustes"
-          >
-            <Settings size={22} className="text-emerald-700" />
-          </button>
+        <div className="flex flex-row flex-wrap items-center justify-end gap-4">
 
           <div className="flex items-center gap-2 text-gray-600 text-sm">
             <Mail size={16} />
@@ -180,13 +173,8 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
         </div>
       </header>
 
-      {/* ⚙️ Modal de Ajustes */}
-      <SettingsModal
-        open={showSettings}
-        jornada={jornada}
-        onJornadaChange={setJornada}
-        onClose={() => setShowSettings(false)}
-      />
+
+   
 
       {/* 📅 Calendario */}
       <section className="bg-white rounded-xl shadow-md border border-gray-200 p-6 w-full">
