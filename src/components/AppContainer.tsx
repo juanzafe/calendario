@@ -13,7 +13,9 @@ import {
   User,
   Mail,
   ArrowLeft,
+  Settings,
 } from "lucide-react";
+import { SettingsModal } from "./SettingsModal";
 
 interface AppContainerProps {
   showOnlyChart?: boolean;
@@ -23,6 +25,17 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
   const { data: user } = useUser();
   const [calendario, setCalendario] = useState(new CalendarioAutoescuela());
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [showSettings, setShowSettings] = useState(false);
+
+  // ✅ Jornada persistente (lee y guarda en localStorage)
+  const [jornada, setJornada] = useState<"media" | "completa">(
+    () => (localStorage.getItem("jornada") as "media" | "completa") || "media"
+  );
+
+  useEffect(() => {
+    localStorage.setItem("jornada", jornada);
+  }, [jornada]);
+
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
@@ -79,17 +92,19 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
       startIcon={<LogOutIcon size={18} />}
       onClick={() => auth.signOut()}
       sx={{
-        marginTop: 2,
         borderRadius: 4,
         textTransform: "none",
         fontWeight: 500,
+        height: "38px",
+        padding: "0 12px",
+        marginTop: 0,
       }}
     >
       Cerrar sesión
     </Button>
   );
 
-  
+  // 🔹 Modo gráfica (solo chart)
   if (showOnlyChart) {
     const nombreMes = currentDate.toLocaleString("es-ES", {
       month: "long",
@@ -97,51 +112,34 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
     });
 
     return (
-      <div className="min-h-screen w-screen bg-gradient-to-b from-gray-50 to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 py-10">
+      <div className="min-h-screen w-screen bg-gradient-to-b from-gray-50 to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 py-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <BarChart3 size={28} className="text-emerald-700" />
+            <h1 className="text-3xl font-semibold">
+              Gráfica de clases – {nombreMes}
+            </h1>
+          </div>
 
+          <div className="flex flex-row flex-wrap items-center justify-end gap-3 mt-2 sm:mt-0">
+            <Button
+              variant="outlined"
+              startIcon={<ArrowLeft size={18} />}
+              onClick={() => navigate("/admin")}
+              sx={{
+                textTransform: "none",
+                borderRadius: 4,
+                fontWeight: 500,
+                height: "40px",
+                minWidth: "180px",
+              }}
+            >
+              Volver al calendario
+            </Button>
+            <LogOut />
+          </div>
+        </div>
 
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-  {/* 🔹 Título */}
-  <div className="flex items-center gap-2">
-    <BarChart3 size={28} className="text-emerald-700" />
-    <h1 className="text-3xl font-semibold">
-      Gráfica de clases – {nombreMes}
-    </h1>
-  </div>
-
-  {/* 🔹 Botones alineados perfectamente */}
-  <div className="flex flex-row flex-wrap items-center justify-end gap-3 mt-4 sm:mt-0">
-    <div className="flex items-center">
-      <Button
-        variant="outlined"
-        startIcon={<ArrowLeft size={18} />}
-        onClick={() => navigate("/admin")}
-        sx={{
-          textTransform: "none",
-          borderRadius: 4,
-          fontWeight: 500,
-          height: "40px",
-          minWidth: "200px",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        Volver al calendario
-      </Button>
-    </div>
-
-    {/* 🔹 Contenedor que fuerza alineación del LogOut */}
-    <div className="flex items-center" style={{ height: "40px", marginTop: 0 }}>
-      <div style={{ marginTop: 0 }}>
-        <LogOut />
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-  
         <div className="w-full bg-white rounded-xl shadow p-6 border border-gray-200">
           <ClasesChart clasesPorDia={clasesPorDia} />
         </div>
@@ -149,24 +147,48 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
     );
   }
 
+  // 🔹 Modo calendario
   return (
-    <div className="min-h-screen w-screen bg-gradient-to-b from-white to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 py-10">
+    <div className="w-screen bg-gradient-to-b from-white to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 pt-4 pb-6">
       {/* Header */}
-      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
-          <div className="flex items-center gap-2 text-emerald-700 font-semibold text-lg">
-            <User size={20} />
-            <span>{user?.displayName || "Invitado"}</span>
-          </div>
+      <header className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 mb-4">
+        <div className="flex items-center gap-5 text-emerald-700 font-semibold text-lg">
+          <User size={22} />
+          <span>{user?.displayName || "Invitado"}</span>
+          <img
+            src="https://quefranquicia.com/sitepanel/wp-content/uploads/2021/11/logo-TORCAL-AUTOESCUELAS.png"
+            alt="Logo Torcal Autoescuelas"
+            className="w-[400px] h-[180px] object-fill"
+          />
+        </div>
+
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowSettings(true)}
+            className="p-2 rounded-full hover:bg-emerald-100 transition-colors"
+            title="Ajustes"
+          >
+            <Settings size={22} className="text-emerald-700" />
+          </button>
+
           <div className="flex items-center gap-2 text-gray-600 text-sm">
             <Mail size={16} />
             <span>{user?.email || "Sin correo"}</span>
           </div>
+
+          <LogOut />
         </div>
-        <LogOut />
       </header>
 
-      
+      {/* ⚙️ Modal de Ajustes */}
+      <SettingsModal
+        open={showSettings}
+        jornada={jornada}
+        onJornadaChange={setJornada}
+        onClose={() => setShowSettings(false)}
+      />
+
+      {/* 📅 Calendario */}
       <section className="bg-white rounded-xl shadow-md border border-gray-200 p-6 w-full">
         <Month
           calendario={calendario}
@@ -183,11 +205,12 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
             setCalendario(updated);
           }}
           onMonthChange={(date) => setCurrentDate(date)}
+          jornada={jornada}
         />
       </section>
 
-      
-      <div className="flex justify-center mt-10">
+      {/* 📊 Botón para ver gráfica */}
+      <div className="flex justify-center mt-8">
         <Button
           variant="contained"
           color="primary"

@@ -11,11 +11,21 @@ export interface CalendarioAutoescuelaProps {
   removeClass: (day: Date) => void;
   resetClass: (day: Date) => void;
   onMonthChange?: (date: Date) => void;
+  jornada?: "media" | "completa";
 }
 
 export function Month(props: CalendarioAutoescuelaProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [clasesDelMes, setClasesDelMes] = useState(0);
+
+  // 🟢 Estado local para jornada, con persistencia en localStorage
+  const [jornada, setJornada] = useState<"media" | "completa">(
+    () => (localStorage.getItem("jornada") as "media" | "completa") || "media"
+  );
+
+  useEffect(() => {
+    localStorage.setItem("jornada", jornada);
+  }, [jornada]);
 
   const handlePreviousMonth = () => {
     const prevMonth = new Date(currentDate);
@@ -42,7 +52,8 @@ export function Month(props: CalendarioAutoescuelaProps) {
 
   return (
     <div className="w-full h-full flex flex-col bg-gradient-to-b from-emerald-50 to-white text-gray-900 rounded-xl shadow-sm border border-emerald-100 overflow-hidden">
-      {/* Header superior con navegación */}
+      
+      {/* 🔹 HEADER DEL MES */}
       <div className="flex justify-between items-center px-4 py-2 bg-emerald-100 text-emerald-800 border-b border-emerald-200">
         <button
           onClick={handlePreviousMonth}
@@ -68,25 +79,33 @@ export function Month(props: CalendarioAutoescuelaProps) {
         </button>
       </div>
 
-      {/* Encabezado de días */}
+      {/* 🔹 CABECERA DE DÍAS */}
       <div className="flex-shrink-0">
         <MonthHeader {...props} />
       </div>
 
-      {/* Días del mes */}
+      {/* 🔹 CONTENEDOR DE DÍAS */}
       <div className="flex-grow w-full">
-        <DaysContainer {...props} currentDate={currentDate} />
+        <DaysContainer
+  {...props}
+  currentDate={currentDate}
+  jornada={props.jornada ?? "media"} // ✅ valor por defecto para evitar undefined
+/>
+ 
       </div>
 
-      {/* Footer con resumen y objetivos */}
+      {/* 🔹 PIE CON CONTROLES Y RESUMEN */}
       <div className="bg-white border-t border-gray-200 py-3 px-4 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+
        
+
+        {/* 🔹 Contador de días y clases */}
         <div className="flex-1 bg-emerald-50 border border-emerald-100 rounded-lg p-3 text-sm shadow-sm">
           <WorkingDaysCounter
             year={currentDate.getFullYear()}
             month={currentDate.getMonth()}
             clasesDelMesVisible={clasesDelMes}
-            
+            jornada={jornada}
           />
         </div>
       </div>

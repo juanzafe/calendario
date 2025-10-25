@@ -12,7 +12,7 @@ const AdminLayout = () => {
   }
 
   if(!signInCheckResult.signedIn){
-    return <Navigate to="/auth/register" replace />
+    return <Navigate to="/" replace />
   }
 
 

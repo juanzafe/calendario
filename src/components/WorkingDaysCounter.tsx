@@ -42,6 +42,7 @@ interface WorkingDaysCounterProps {
   month: number;
   holidays?: string[];
   clasesDelMesVisible: number;
+  jornada: "media" | "completa";
 }
 
 const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
@@ -49,6 +50,7 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
   month,
   holidays = spanishHolidays2025,
   clasesDelMesVisible,
+  jornada,
 }) => {
   const [workingDays, setWorkingDays] = useState(0);
   const [remainingDays, setRemainingDays] = useState(0);
@@ -74,12 +76,17 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
     setVacationDays(Number(e.target.value));
   };
 
+ 
+  const valorPorDia = jornada === "media" ? 7.8125 : 12.5;
+
   const adjustedDays = Math.max(workingDays - vacationDays, 0);
   const adjustedRemaining = Math.max(remainingDays - vacationDays, 0);
   const adjustedClassesNeeded =
-    Math.round(adjustedDays * 7.8125) - clasesDelMesVisible;
+    Math.round(adjustedDays * valorPorDia) - clasesDelMesVisible;
   const adjustedClassesPerDay =
-    adjustedRemaining > 0 ? (adjustedClassesNeeded / adjustedRemaining).toFixed(2) : "0";
+    adjustedRemaining > 0
+      ? (adjustedClassesNeeded / adjustedRemaining).toFixed(2)
+      : "0";
 
   const cardBase =
     "bg-emerald-50 border border-emerald-200 rounded-md p-4 shadow-sm flex flex-col text-sm";
@@ -135,7 +142,7 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
               <span className="flex items-center gap-1 text-gray-700">
                 <Target size={15} className="text-emerald-600" /> Clases objetivo:
               </span>
-              <strong>{Math.round(adjustedDays * 7.8125)}</strong>
+              <strong>{Math.round(adjustedDays * valorPorDia)}</strong>
             </div>
 
             <div className="flex justify-between">
