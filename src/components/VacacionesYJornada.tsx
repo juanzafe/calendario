@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Plane } from "lucide-react";
+import { refreshHolidays } from "../modelo/CalendarioAutoescuela";
 
 interface VacacionesYJornadaProps {
   workingDays: number;
   jornada: "media" | "completa";
   setJornada: (value: "media" | "completa") => void;
   onVacationChange: (days: number) => void;
+  vacationNumber: number;
 }
 
 const VacacionesYJornada: React.FC<VacacionesYJornadaProps> = ({
@@ -13,12 +15,12 @@ const VacacionesYJornada: React.FC<VacacionesYJornadaProps> = ({
   jornada,
   setJornada,
   onVacationChange,
+  vacationNumber
 }) => {
-  const [vacationDays, setVacationDays] = useState(0);
+
 
   const handleVacationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = Number(e.target.value);
-    setVacationDays(value);
     onVacationChange(value);
   };
 
@@ -33,11 +35,11 @@ const VacacionesYJornada: React.FC<VacacionesYJornadaProps> = ({
         {/* Selector de vacaciones */}
         <div className="flex justify-between items-center">
           <span className="text-gray-700">
-            Días: <strong>{vacationDays}</strong>
+            Días: <strong>{vacationNumber}</strong>
           </span>
           <select
             id="vacation-select"
-            value={vacationDays}
+            value={vacationNumber}
             onChange={handleVacationChange}
             className="border border-emerald-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
           >

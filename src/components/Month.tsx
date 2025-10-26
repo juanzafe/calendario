@@ -12,6 +12,8 @@ export interface CalendarioAutoescuelaProps {
   resetClass: (day: Date) => void;
   onMonthChange?: (date: Date) => void;
   jornada?: "media" | "completa";
+  vacationNumber: number;
+  onVacationChange: (days: number) => void;
 }
 
 export function Month(props: CalendarioAutoescuelaProps) {
@@ -101,6 +103,8 @@ export function Month(props: CalendarioAutoescuelaProps) {
           clasesDelMesVisible={clasesDelMes}
           jornada={jornada}
           setJornada={setJornada} 
+          vacationNumber={props.vacationNumber}
+          onVacationChange={props.onVacationChange}
         />
       </div>
     </div>

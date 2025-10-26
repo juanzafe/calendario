@@ -44,6 +44,8 @@ interface WorkingDaysCounterProps {
   clasesDelMesVisible: number;
   jornada: "media" | "completa";
   setJornada: (value: "media" | "completa") => void;
+  vacationNumber: number;
+  onVacationChange: (days: number) => void;
 }
 
 const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
@@ -53,10 +55,11 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
   clasesDelMesVisible,
   jornada,
   setJornada,
+  vacationNumber,
+  onVacationChange
 }) => {
   const [workingDays, setWorkingDays] = useState(0);
   const [remainingDays, setRemainingDays] = useState(0);
-  const [vacationDays, setVacationDays] = useState(0);
 
   useEffect(() => {
     const allWorkingDays = getWorkingDaysWithHolidays(year, month, holidays);
@@ -76,8 +79,8 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
 
   const valorPorDia = jornada === "media" ? 7.8125 : 12.5;
 
-  const adjustedDays = Math.max(workingDays - vacationDays, 0);
-  const adjustedRemaining = Math.max(remainingDays - vacationDays, 0);
+  const adjustedDays = Math.max(workingDays - vacationNumber, 0);
+  const adjustedRemaining = Math.max(remainingDays - vacationNumber, 0);
   const adjustedClassesNeeded =
     Math.round(adjustedDays * valorPorDia) - clasesDelMesVisible;
   const adjustedClassesPerDay =
@@ -87,7 +90,7 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
 
   const cardBase =
     "bg-emerald-50 border border-emerald-200 rounded-md p-4 shadow-sm flex flex-col text-sm";
-
+  console.log("==== pintando vacactionNum", vacationNumber)
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -165,7 +168,8 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
           workingDays={workingDays}
           jornada={jornada}
           setJornada={setJornada}
-          onVacationChange={setVacationDays}
+          onVacationChange={onVacationChange}
+          vacationNumber={vacationNumber}
         />
       </div>
     </motion.div>

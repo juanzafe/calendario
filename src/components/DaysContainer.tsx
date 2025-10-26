@@ -8,6 +8,8 @@ interface DaysContainerProps {
   removeClass: CalendarioAutoescuelaProps["removeClass"];
   resetClass: CalendarioAutoescuelaProps["resetClass"];
   jornada: CalendarioAutoescuelaProps["jornada"];
+  vacationNumber: CalendarioAutoescuelaProps["vacationNumber"];
+  onVacationChange: CalendarioAutoescuelaProps["onVacationChange"];
 }
 
 export function DaysContainer(props: DaysContainerProps) {

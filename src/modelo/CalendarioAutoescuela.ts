@@ -7,6 +7,14 @@ function refresh(count:number, date:Date){
         date: date.toISOString(),
     });
 }
+export function refreshHolidays(count:number, date:Date){
+    date = new Date(date.getFullYear(), date.getMonth(), 1);
+    setDoc(doc(db, "holidaysPerMonth", "email", auth.currentUser?.email ?? "noemail",date.toISOString()), {
+        count: count,
+        date: date.toISOString(),
+    });
+}
+
 
 export class CalendarioAutoescuela {
     getClassesByDay(currentDate: Date) {
@@ -17,7 +25,7 @@ export class CalendarioAutoescuela {
 
     constructor(private readonly classes = new Map<number, number>()) {}
 
-    addClass(day: Date): CalendarioAutoescuela {
+        addClass(day: Date): CalendarioAutoescuela {
         const currentCounterValue = this.classes.get(getStartOfDay(day)) ?? 0;
         const newCounterValue = currentCounterValue + 1;
         console.log("Añadiendo clase al día ", day, currentCounterValue, newCounterValue)

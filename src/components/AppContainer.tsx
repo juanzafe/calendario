@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
+import { CalendarioAutoescuela, refreshHolidays } from "../modelo/CalendarioAutoescuela";
 import { Month } from "./Month";
 import { useUser } from "reactfire";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/firebase";
 import { Button } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router";
@@ -13,9 +13,7 @@ import {
   User,
   Mail,
   ArrowLeft,
-  
 } from "lucide-react";
-
 
 interface AppContainerProps {
   showOnlyChart?: boolean;
@@ -27,7 +25,6 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showSettings, setShowSettings] = useState(false);
 
-  
   const [jornada, setJornada] = useState<"media" | "completa">(
     () => (localStorage.getItem("jornada") as "media" | "completa") || "media"
   );
@@ -47,6 +44,50 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
     }
   }, [params]);
 
+  // ==========================
+  // 🔹 VACACIONES POR MES
+  // ==========================
+  const [vacationNumber, setVacationNumber] = useState<Record<string, number>>({});
+
+  const onVacationChange = async (days: number) => {
+    if (!user?.email) return;
+
+    // Clave estable por mes y año (ej: "2025-9")
+    const key = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+    const updatedVacationNumber = { ...vacationNumber, [key]: days };
+    setVacationNumber(updatedVacationNumber);
+
+    refreshHolidays(days, currentDate);
+
+    const email = user.email ?? "unknown";
+    const docRef = doc(db, "holidaysPerMonth", email ?? "unknown")
+
+    await setDoc(docRef, updatedVacationNumber, { merge: true });
+  };
+
+  useEffect(() => {
+    if (!user?.email) return;
+
+    const loadVacations = async () => {
+      const email = user.email;
+      const docRef = doc(db, "holidaysPerMonth", user.email ?? "noemail");
+
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data && typeof data === "object") {
+          setVacationNumber(data as Record<string, number>);
+        }
+      }
+    };
+
+    loadVacations();
+  }, [user]);
+
+  // ==========================
+  // 🔹 CLASES POR DÍA
+  // ==========================
   useEffect(() => {
     if (!user) return;
     const classesCollectionRef = collection(
@@ -67,6 +108,9 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
     });
   }, [user]);
 
+  // ==========================
+  // 🔹 GENERAR DATOS PARA GRÁFICA
+  // ==========================
   const diasDelMes = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth() + 1,
@@ -104,7 +148,9 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
     </Button>
   );
 
-  
+  // ==========================
+  // 🔹 MODO GRÁFICA
+  // ==========================
   if (showOnlyChart) {
     const nombreMes = currentDate.toLocaleString("es-ES", {
       month: "long",
@@ -147,10 +193,14 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
     );
   }
 
-  
+  // ==========================
+  // 🔹 CALENDARIO PRINCIPAL
+  // ==========================
+  const key = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+  const numberOfVacationForCurrentMonth = vacationNumber[key] ?? 0;
+
   return (
     <div className="w-screen bg-gradient-to-b from-white to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 pt-4 pb-6">
-      
       <header className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 mb-4">
         <div className="flex items-center gap-5 text-emerald-700 font-semibold text-lg">
           <User size={22} />
@@ -163,20 +213,14 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
         </div>
 
         <div className="flex flex-row flex-wrap items-center justify-end gap-4">
-
           <div className="flex items-center gap-2 text-gray-600 text-sm">
             <Mail size={16} />
             <span>{user?.email || "Sin correo"}</span>
           </div>
-
           <LogOut />
         </div>
       </header>
 
-
-   
-
-      
       <section className="bg-white rounded-xl shadow-md border border-gray-200 p-6 w-full">
         <Month
           calendario={calendario}
@@ -194,10 +238,11 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
           }}
           onMonthChange={(date) => setCurrentDate(date)}
           jornada={jornada}
+          vacationNumber={numberOfVacationForCurrentMonth}
+          onVacationChange={onVacationChange}
         />
       </section>
 
-      
       <div className="flex justify-center mt-8">
         <Button
           variant="contained"
