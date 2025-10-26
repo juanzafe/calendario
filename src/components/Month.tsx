@@ -53,7 +53,7 @@ export function Month(props: CalendarioAutoescuelaProps) {
   return (
     <div className="w-full h-full flex flex-col bg-gradient-to-b from-emerald-50 to-white text-gray-900 rounded-xl shadow-sm border border-emerald-100 overflow-hidden">
       
-      {/* 🔹 HEADER DEL MES */}
+      
       <div className="flex justify-between items-center px-4 py-2 bg-emerald-100 text-emerald-800 border-b border-emerald-200">
         <button
           onClick={handlePreviousMonth}
@@ -79,12 +79,12 @@ export function Month(props: CalendarioAutoescuelaProps) {
         </button>
       </div>
 
-      {/* 🔹 CABECERA DE DÍAS */}
+    
       <div className="flex-shrink-0">
         <MonthHeader {...props} />
       </div>
 
-      {/* 🔹 CONTENEDOR DE DÍAS */}
+      
       <div className="flex-grow w-full">
         <DaysContainer
           {...props}
@@ -93,7 +93,7 @@ export function Month(props: CalendarioAutoescuelaProps) {
         />
       </div>
 
-      {/* 🔹 PIE CON RESUMEN */}
+      
       <div className="bg-white border-t border-gray-200 py-3 px-4">
         <WorkingDaysCounter
           year={currentDate.getFullYear()}

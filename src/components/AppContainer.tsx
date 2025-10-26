@@ -13,7 +13,7 @@ import {
   User,
   Mail,
   ArrowLeft,
-  Settings,
+  
 } from "lucide-react";
 
 
@@ -104,7 +104,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
     </Button>
   );
 
-  // 🔹 Modo gráfica (solo chart)
+  
   if (showOnlyChart) {
     const nombreMes = currentDate.toLocaleString("es-ES", {
       month: "long",
@@ -147,10 +147,10 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
     );
   }
 
-  // 🔹 Modo calendario
+  
   return (
     <div className="w-screen bg-gradient-to-b from-white to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 pt-4 pb-6">
-      {/* Header */}
+      
       <header className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 mb-4">
         <div className="flex items-center gap-5 text-emerald-700 font-semibold text-lg">
           <User size={22} />
@@ -176,7 +176,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 
    
 
-      {/* 📅 Calendario */}
+      
       <section className="bg-white rounded-xl shadow-md border border-gray-200 p-6 w-full">
         <Month
           calendario={calendario}
@@ -197,7 +197,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
         />
       </section>
 
-      {/* 📊 Botón para ver gráfica */}
+      
       <div className="flex justify-center mt-8">
         <Button
           variant="contained"

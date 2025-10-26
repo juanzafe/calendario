@@ -17,24 +17,24 @@ export function DaysContainer(props: DaysContainerProps) {
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDay = new Date(year, month, 1);
-  let startDay = (firstDay.getDay() + 6) % 7; // Ajusta para empezar en lunes
+  let startDay = (firstDay.getDay() + 6) % 7; 
   const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
 
   const cells = Array.from({ length: totalCells }, (_, index) => {
     const dayNumber = index - startDay + 1;
 
-    // Día del mes actual
+    
     if (dayNumber >= 1 && dayNumber <= daysInMonth) {
       return { date: new Date(year, month, dayNumber), type: "current" };
     }
 
-    // Días del mes anterior
+    
     if (dayNumber < 1) {
       const prevMonthDate = new Date(year, month, dayNumber);
       return { date: prevMonthDate, type: "prev" };
     }
 
-    // Días del mes siguiente
+
     const nextMonthDate = new Date(year, month, dayNumber);
     return { date: nextMonthDate, type: "next" };
   });
