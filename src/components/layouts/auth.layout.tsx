@@ -1,5 +1,8 @@
 import { Navigate, Outlet } from "react-router"
 import { useSigninCheck } from "reactfire"
+import LoadingScreen from "../LoadingScreen"
+import calendar from "../../assets/calendar.png"
+
 
 const AuthLayout = () => {
 
@@ -8,7 +11,7 @@ const AuthLayout = () => {
 
 
   if(status==="loading" || !hasEmitted){
-    return <div>Loading...</div>
+    return <LoadingScreen message="Cargando3..." logo={calendar}/>
   }
 
   if(status === "success" && signInCheckResult.signedIn){

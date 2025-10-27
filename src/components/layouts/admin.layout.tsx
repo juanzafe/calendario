@@ -1,39 +1,42 @@
-import { Suspense } from "react"
-import { Navigate, Outlet } from "react-router"
-import { useSigninCheck, useUser } from "reactfire"
+import { Suspense } from "react";
+import { Navigate, Outlet } from "react-router";
+import { useSigninCheck, useUser } from "reactfire";
+import LoadingScreen from "../LoadingScreen";
+import calendar from "../../assets/calendar.png";
 
 const AdminLayout = () => {
+  const { status, data: signInCheckResult, hasEmitted } = useSigninCheck();
 
-  const {status, data: signInCheckResult, hasEmitted}= useSigninCheck()
-
-
-  if(status==="loading" || !hasEmitted){
-    return <div>Loading...</div>
+  // 🔹 1) Cargando autenticación
+  if (status === "loading" || !hasEmitted) {
+    return <LoadingScreen message="Cargando aplicación..." logo={calendar} />;
   }
 
-  if(!signInCheckResult.signedIn){
-    return <Navigate to="/" replace />
+  // 🔹 2) Usuario no autenticado
+  if (!signInCheckResult.signedIn) {
+    return <Navigate to="/" replace />;
   }
 
-
-
+  // 🔹 3) Layout autenticado
   return (
-    <Suspense fallback={<div>Loading user...</div>}>
-      <AuthenticatedLayout/>
+    <Suspense
+      fallback={
+        <LoadingScreen message="Cargando aplicación..." logo={calendar} />
+      }
+    >
+      <AuthenticatedLayout />
     </Suspense>
-  )
-}
+  );
+};
+
 export default AdminLayout;
 
-
 const AuthenticatedLayout = () => {
-  useUser(
-    {suspense: true}
-  )
+  useUser({ suspense: true });
 
   return (
     <div>
-      <Outlet/>
+      <Outlet />
     </div>
-  )
-}
+  );
+};

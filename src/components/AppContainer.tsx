@@ -5,7 +5,7 @@ import { Month } from "./Month";
 import { useUser } from "reactfire";
 import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/firebase";
-import { Button, CircularProgress } from "@mui/material";
+import { Button } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router";
 import { ClasesChart } from "./ClasesChart";
 import {
@@ -15,6 +15,7 @@ import {
   Mail,
   ArrowLeft,
 } from "lucide-react";
+import LoadingScreen from "./LoadingScreen";
 
 interface AppContainerProps {
   showOnlyChart?: boolean;
@@ -182,15 +183,8 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
   // 🔹 LOADING STATE
   // ==========================
   if (isLoadingSettings) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-emerald-50 text-emerald-800">
-        <div className="flex flex-col items-center gap-4">
-          <CircularProgress color="success" />
-          <span className="font-medium text-lg">Cargando configuración...</span>
-        </div>
-      </div>
-    );
-  }
+  return <LoadingScreen message="Cargando aplicación..." logo={calendar} />;
+}
 
   // ==========================
   // 🔹 MODO GRÁFICA
@@ -226,7 +220,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
             >
               Volver al calendario
             </Button>
-            <LogOut />
+            
           </div>
         </div>
 
