@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import calendar from "../assets/calendar.png";
 import { CalendarioAutoescuela, refreshHolidays } from "../modelo/CalendarioAutoescuela";
 import { Month } from "./Month";
 import { useUser } from "reactfire";
@@ -244,25 +245,33 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 
   return (
     <div className="w-screen bg-gradient-to-b from-white to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 pt-4 pb-6">
-      <header className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 mb-4">
-        <div className="flex items-center gap-5 text-emerald-700 font-semibold text-lg">
-          <User size={22} />
-          <span>{user?.displayName || "Invitado"}</span>
-          <img
-            src="https://quefranquicia.com/sitepanel/wp-content/uploads/2021/11/logo-TORCAL-AUTOESCUELAS.png"
-            alt="Logo Torcal Autoescuelas"
-            className="w-[400px] h-[180px] object-fill"
-          />
-        </div>
+   <header className="flex flex-col items-center mb-4 relative">
+  {/* 🔹 Fila superior: usuario a la izquierda, correo/logout a la derecha */}
+  <div className="flex w-full items-center justify-between px-4 sm:px-8 mt-2">
+    {/* Usuario */}
+    <div className="flex items-center gap-3 text-emerald-700 font-semibold text-lg">
+      <User size={22} />
+      <span>{user?.displayName || "Invitado"}</span>
+    </div>
 
-        <div className="flex flex-row flex-wrap items-center justify-end gap-4">
-          <div className="flex items-center gap-2 text-gray-600 text-sm">
-            <Mail size={16} />
-            <span>{user?.email || "Sin correo"}</span>
-          </div>
-          <LogOut />
-        </div>
-      </header>
+    {/* Correo y botón de cerrar sesión */}
+    <div className="flex items-center gap-4 text-gray-600 text-sm">
+      <div className="flex items-center gap-2">
+        <Mail size={16} />
+        <span>{user?.email || "Sin correo"}</span>
+      </div>
+      <LogOut />
+    </div>
+  </div>
+
+  {/* 🔹 Logo centrado visualmente pero con leve desplazamiento a la izquierda */}
+  <img
+    src={calendar}
+    alt="Logo calendario"
+    className="w-full max-w-[300px] h-auto object-contain mt-0 -translate-x-14"
+  />
+</header>
+
 
       <section className="bg-white rounded-xl shadow-md border border-gray-200 p-6 w-full">
         <Month
