@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Plane } from "lucide-react";
-import { refreshHolidays } from "../modelo/CalendarioAutoescuela";
+
 
 interface VacacionesYJornadaProps {
   workingDays: number;

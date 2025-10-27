@@ -4,7 +4,7 @@ import { Month } from "./Month";
 import { useUser } from "reactfire";
 import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/firebase";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router";
 import { ClasesChart } from "./ClasesChart";
 import {
@@ -23,15 +23,25 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
   const { data: user } = useUser();
   const [calendario, setCalendario] = useState(new CalendarioAutoescuela());
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [showSettings, setShowSettings] = useState(false);
 
-  const [jornada, setJornada] = useState<"media" | "completa">(
-    () => (localStorage.getItem("jornada") as "media" | "completa") || "media"
-  );
+  // ==========================
+  // 🔹 JORNADA (media / completa) — Persistente solo con Firebase
+  // ==========================
+  const [jornada, setJornada] = useState<"media" | "completa">("media");
+  const [isLoadingSettings, setIsLoadingSettings] = useState(true);
 
+  // Guardar jornada en Firebase cuando cambie (solo si ya se cargó)
   useEffect(() => {
-    localStorage.setItem("jornada", jornada);
-  }, [jornada]);
+    if (!user?.email || isLoadingSettings) return;
+
+    const saveJornada = async () => {
+      const email = user?.email ?? "noemail";
+      const docRef = doc(db, "userSettings", email);
+      await setDoc(docRef, { jornada }, { merge: true });
+    };
+
+    saveJornada();
+  }, [jornada, user, isLoadingSettings]);
 
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -52,37 +62,56 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
   const onVacationChange = async (days: number) => {
     if (!user?.email) return;
 
-    // Clave estable por mes y año (ej: "2025-9")
     const key = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
     const updatedVacationNumber = { ...vacationNumber, [key]: days };
     setVacationNumber(updatedVacationNumber);
 
     refreshHolidays(days, currentDate);
 
-    const email = user.email ?? "unknown";
-    const docRef = doc(db, "holidaysPerMonth", email ?? "unknown")
-
+    const email = user?.email ?? "unknown";
+    const docRef = doc(db, "holidaysPerMonth", email);
     await setDoc(docRef, updatedVacationNumber, { merge: true });
   };
 
+  // ==========================
+  // 🔹 CARGAR CONFIGURACIÓN DE USUARIO (vacaciones + jornada)
+  // ==========================
   useEffect(() => {
     if (!user?.email) return;
 
-    const loadVacations = async () => {
-      const email = user.email;
-      const docRef = doc(db, "holidaysPerMonth", user.email ?? "noemail");
+    const loadUserData = async () => {
+      const email = user?.email ?? "noemail";
 
+      // 1️⃣ Cargar vacaciones
+      const docRef = doc(db, "holidaysPerMonth", email);
       const docSnap = await getDoc(docRef);
-
       if (docSnap.exists()) {
         const data = docSnap.data();
         if (data && typeof data === "object") {
           setVacationNumber(data as Record<string, number>);
         }
       }
+
+      // 2️⃣ Cargar jornada desde Firebase o crear si no existe
+      const settingsRef = doc(db, "userSettings", email);
+      const settingsSnap = await getDoc(settingsRef);
+      if (settingsSnap.exists()) {
+        const data = settingsSnap.data();
+        if (data.jornada === "media" || data.jornada === "completa") {
+          setJornada(data.jornada);
+        } else {
+          await setDoc(settingsRef, { jornada: "media" }, { merge: true });
+          setJornada("media");
+        }
+      } else {
+        await setDoc(settingsRef, { jornada: "media" }, { merge: true });
+        setJornada("media");
+      }
+
+      setIsLoadingSettings(false);
     };
 
-    loadVacations();
+    loadUserData();
   }, [user]);
 
   // ==========================
@@ -147,6 +176,20 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
       Cerrar sesión
     </Button>
   );
+
+  // ==========================
+  // 🔹 LOADING STATE
+  // ==========================
+  if (isLoadingSettings) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-emerald-50 text-emerald-800">
+        <div className="flex flex-col items-center gap-4">
+          <CircularProgress color="success" />
+          <span className="font-medium text-lg">Cargando configuración...</span>
+        </div>
+      </div>
+    );
+  }
 
   // ==========================
   // 🔹 MODO GRÁFICA
@@ -238,6 +281,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
           }}
           onMonthChange={(date) => setCurrentDate(date)}
           jornada={jornada}
+          setJornada={setJornada}
           vacationNumber={numberOfVacationForCurrentMonth}
           onVacationChange={onVacationChange}
         />

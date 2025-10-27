@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
 import { DaysContainer } from "./DaysContainer";
 import { MonthHeader } from "./MonthHeader";
@@ -11,7 +11,8 @@ export interface CalendarioAutoescuelaProps {
   removeClass: (day: Date) => void;
   resetClass: (day: Date) => void;
   onMonthChange?: (date: Date) => void;
-  jornada?: "media" | "completa";
+  jornada: "media" | "completa";
+  setJornada: (value: "media" | "completa") => void;
   vacationNumber: number;
   onVacationChange: (days: number) => void;
 }
@@ -20,14 +21,21 @@ export function Month(props: CalendarioAutoescuelaProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [clasesDelMes, setClasesDelMes] = useState(0);
 
-  
-  const [jornada, setJornada] = useState<"media" | "completa">(
-    () => (localStorage.getItem("jornada") as "media" | "completa") || "media"
-  );
+  const {
+    calendario,
+    onMonthChange,
+    jornada,
+    setJornada,
+    vacationNumber,
+    onVacationChange,
+  } = props;
 
+  // 🔹 Actualiza la fecha en el componente padre
   useEffect(() => {
-    localStorage.setItem("jornada", jornada);
-  }, [jornada]);
+    onMonthChange?.(currentDate);
+    const clasesMes = calendario.totalNumberOfClassesInMonth(currentDate);
+    setClasesDelMes(clasesMes);
+  }, [currentDate, calendario]);
 
   const handlePreviousMonth = () => {
     const prevMonth = new Date(currentDate);
@@ -41,12 +49,6 @@ export function Month(props: CalendarioAutoescuelaProps) {
     setCurrentDate(nextMonth);
   };
 
-  useEffect(() => {
-    props.onMonthChange?.(currentDate);
-    const clasesMes = props.calendario.totalNumberOfClassesInMonth(currentDate);
-    setClasesDelMes(clasesMes);
-  }, [currentDate, props.calendario]);
-
   const nombreMes = currentDate.toLocaleString("es-ES", {
     month: "long",
     year: "numeric",
@@ -54,8 +56,7 @@ export function Month(props: CalendarioAutoescuelaProps) {
 
   return (
     <div className="w-full h-full flex flex-col bg-gradient-to-b from-emerald-50 to-white text-gray-900 rounded-xl shadow-sm border border-emerald-100 overflow-hidden">
-      
-      
+      {/* 🔹 Encabezado del mes */}
       <div className="flex justify-between items-center px-4 py-2 bg-emerald-100 text-emerald-800 border-b border-emerald-200">
         <button
           onClick={handlePreviousMonth}
@@ -81,12 +82,12 @@ export function Month(props: CalendarioAutoescuelaProps) {
         </button>
       </div>
 
-    
+      {/* 🔹 Cabecera de los días */}
       <div className="flex-shrink-0">
         <MonthHeader {...props} />
       </div>
 
-      
+      {/* 🔹 Contenedor de días */}
       <div className="flex-grow w-full">
         <DaysContainer
           {...props}
@@ -95,16 +96,16 @@ export function Month(props: CalendarioAutoescuelaProps) {
         />
       </div>
 
-      
+      {/* 🔹 Contador y control de jornada/vacaciones */}
       <div className="bg-white border-t border-gray-200 py-3 px-4">
         <WorkingDaysCounter
           year={currentDate.getFullYear()}
           month={currentDate.getMonth()}
           clasesDelMesVisible={clasesDelMes}
           jornada={jornada}
-          setJornada={setJornada} 
-          vacationNumber={props.vacationNumber}
-          onVacationChange={props.onVacationChange}
+          setJornada={setJornada}
+          vacationNumber={vacationNumber}
+          onVacationChange={onVacationChange}
         />
       </div>
     </div>
