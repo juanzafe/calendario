@@ -226,10 +226,8 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
             
           </div>
         </div>
-
-        <div className="w-full bg-white rounded-xl shadow p-6 border border-gray-200">
           <ClasesChart clasesPorDia={clasesPorDia} />
-        </div>
+
       </div>
     );
   }

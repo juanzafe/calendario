@@ -16,6 +16,7 @@ import { AppContainer } from "./AppContainer";
 import { useUser } from "reactfire";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 /* ================================================================
    🔹 Tipado
@@ -43,47 +44,63 @@ const chartTheme = {
    📈 Gráfico de clases por día
 ================================================================ */
 export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
+  const isMobile = useIsMobile();
   let acumuladas = 0;
+
   const data = clasesPorDia.map((d) => {
     acumuladas += d.total ?? 0;
-    return {
-      dia: d.dia,
-      total: d.total ?? 0,
-      acumuladas: acumuladas,
-    };
+    return { dia: d.dia, total: d.total ?? 0, acumuladas };
   });
 
   return (
-    <div className="w-full bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h2 className="text-xl font-semibold mb-4 text-center text-emerald-700">
+    <div className="w-full bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6">
+      <h2 className="text-lg sm:text-xl font-semibold mb-4 text-center text-emerald-700">
         Clases diarias y acumuladas
       </h2>
 
-      <ResponsiveContainer width="100%" height={340}>
+      <ResponsiveContainer width="100%" height={isMobile ? 260 : 340}>
         <LineChart
           data={data}
-          margin={{ top: 20, right: 30, bottom: 20, left: 0 }}
+          margin={{
+            top: isMobile ? 10 : 20,
+            right: isMobile ? 10 : 30,
+            bottom: isMobile ? 10 : 20,
+            left: isMobile ? 0 : 20,
+          }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={chartTheme.gridColor}
+            vertical={!isMobile}
+          />
           <XAxis
             dataKey="dia"
             tick={chartTheme.axisFont}
-            label={{
-              value: "Día del mes",
-              position: "insideBottomRight",
-              offset: -10,
-              style: chartTheme.axisFont,
-            }}
+            label={
+              !isMobile
+                ? {
+                    value: "Día del mes",
+                    position: "insideBottomRight",
+                    offset: -10,
+                    style: chartTheme.axisFont,
+                  }
+                : undefined
+            }
           />
-          <YAxis
-            tick={chartTheme.axisFont}
-            label={{
-              value: "Número de clases",
-              angle: -90,
-              position: "insideLeft",
-              style: chartTheme.axisFont,
-            }}
-          />
+
+          {/* Ocultar eje Y en móvil */}
+          {!isMobile && (
+            <YAxis
+              tick={chartTheme.axisFont}
+              label={{
+                value: "Número de clases",
+                angle: -90,
+                position: "insideLeft",
+                style: chartTheme.axisFont,
+              }}
+            />
+          )}
+
           <Tooltip
             contentStyle={chartTheme.tooltipStyle}
             formatter={(value, name) => {
@@ -93,11 +110,14 @@ export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
             }}
             labelFormatter={(label) => `Día ${label}`}
           />
-          <Legend
-            verticalAlign="top"
-            height={36}
-            wrapperStyle={chartTheme.legendFont}
-          />
+
+          {!isMobile && (
+            <Legend
+              verticalAlign="top"
+              height={36}
+              wrapperStyle={chartTheme.legendFont}
+            />
+          )}
 
           <Line
             type="monotone"
@@ -105,7 +125,7 @@ export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
             stroke="#0ea5e9"
             strokeWidth={2}
             name="Clases por día"
-            dot={{ r: 3 }}
+            dot={{ r: isMobile ? 2 : 3 }}
           />
           <Line
             type="monotone"
@@ -113,13 +133,13 @@ export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
             stroke="#10b981"
             strokeWidth={2}
             name="Clases acumuladas"
-            dot={{ r: 3 }}
-            activeDot={{ r: 5 }}
+            dot={{ r: isMobile ? 2 : 3 }}
+            activeDot={{ r: isMobile ? 4 : 5 }}
           />
         </LineChart>
       </ResponsiveContainer>
 
-      <div className="mt-10">
+      <div className="mt-8 sm:mt-10">
         <MonthlyClassesChart />
       </div>
     </div>
@@ -127,13 +147,12 @@ export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
 };
 
 /* ================================================================
-   📊 Gráfico de barras: Clases por mes + promedio anual (sin meses vacíos)
+   📊 Gráfico de barras: Clases por mes + promedio anual
 ================================================================ */
 export const MonthlyClassesChart: React.FC = () => {
   const { data: user } = useUser();
-  const [monthlyData, setMonthlyData] = useState<
-    { mes: string; total: number }[]
-  >([]);
+  const isMobile = useIsMobile();
+  const [monthlyData, setMonthlyData] = useState<{ mes: string; total: number }[]>([]);
   const [average, setAverage] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -143,12 +162,7 @@ export const MonthlyClassesChart: React.FC = () => {
     const loadMonthlyClasses = async () => {
       try {
         const email = user.email ?? "noemail";
-        const classesCollectionRef = collection(
-          db,
-          "classespordia",
-          "email",
-          email
-        );
+        const classesCollectionRef = collection(db, "classespordia", email, "dates");
         const querySnapshot = await getDocs(classesCollectionRef);
 
         const counts: Record<string, number> = {};
@@ -173,12 +187,10 @@ export const MonthlyClassesChart: React.FC = () => {
           };
         });
 
-        // 🔹 Calcular promedio anual solo con meses donde total > 0
         const mesesConClases = months.filter((m) => m.total > 0);
         const promedioAnual =
           mesesConClases.length > 0
-            ? mesesConClases.reduce((acc, m) => acc + m.total, 0) /
-              mesesConClases.length
+            ? mesesConClases.reduce((acc, m) => acc + m.total, 0) / mesesConClases.length
             : 0;
 
         setMonthlyData(months);
@@ -202,48 +214,53 @@ export const MonthlyClassesChart: React.FC = () => {
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4 text-center text-emerald-700">
-        Clases totales por mes (últimos 12 meses)
+    <div className="mt-8 sm:mt-10">
+      <h2 className="text-lg sm:text-xl font-semibold mb-4 text-center text-emerald-700">
+        Clases totales por mes
       </h2>
 
-      <ResponsiveContainer width="100%" height={340}>
+      <ResponsiveContainer width="100%" height={isMobile ? 260 : 340}>
         <ComposedChart
           data={monthlyData}
-          margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+          margin={{
+            top: isMobile ? 10 : 20,
+            right: isMobile ? 10 : 30,
+            left: isMobile ? 0 : 20,
+            bottom: 20,
+          }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} vertical={!isMobile} />
           <XAxis dataKey="mes" tick={chartTheme.axisFont} />
-          <YAxis
-            tick={chartTheme.axisFont}
-            label={{
-              value: "Clases",
-              angle: -90,
-              position: "insideLeft",
-              style: chartTheme.axisFont,
-            }}
-          />
+
+          {!isMobile && (
+            <YAxis
+              tick={chartTheme.axisFont}
+              label={{
+                value: "Clases",
+                angle: -90,
+                position: "insideLeft",
+                style: chartTheme.axisFont,
+              }}
+            />
+          )}
+
           <Tooltip
             contentStyle={chartTheme.tooltipStyle}
             formatter={(value) => [`${value} clases`, "Total del mes"]}
             labelFormatter={(label) => `Mes: ${label}`}
           />
-          <Legend
-            verticalAlign="top"
-            height={36}
-            wrapperStyle={chartTheme.legendFont}
-          />
 
-          {/* 🟩 Barras: Clases totales */}
-          <Bar
-            dataKey="total"
-            name="Clases totales"
-            fill="#10b981"
-            radius={[6, 6, 0, 0]}
-          />
+          {!isMobile && (
+            <Legend
+              verticalAlign="top"
+              height={36}
+              wrapperStyle={chartTheme.legendFont}
+            />
+          )}
 
-          {/* 🔹 Línea horizontal del promedio anual (solo meses con clases) */}
-          {average !== null && average > 0 && (
+          <Bar dataKey="total" name="Clases totales" fill="#10b981" radius={[6, 6, 0, 0]} />
+
+          {!isMobile && average !== null && average > 0 && (
             <ReferenceLine
               y={average}
               label={{
@@ -269,7 +286,7 @@ export const MonthlyClassesChart: React.FC = () => {
 ================================================================ */
 export function ClasesChartPage() {
   return (
-    <div style={{ textAlign: "center", padding: "2rem" }}>
+    <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-emerald-50">
       <AppContainer showOnlyChart />
     </div>
   );
