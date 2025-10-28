@@ -1,10 +1,11 @@
 import { CircularProgress } from "@mui/material";
 import React from "react";
+import calendar from "../assets/calendar.png";
 
 interface LoadingScreenProps {
   /** Texto mostrado debajo del spinner */
   message?: string;
-  /** Logo opcional (ruta o import) */
+  /** Logo opcional */
   logo?: string;
 }
 
@@ -16,9 +17,10 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
     <div className="flex flex-col items-center justify-center min-h-screen bg-white text-gray-800">
       {logo && (
         <img
-          src={logo}
+          src={calendar}
           alt="Logo"
-          className="w-16 h-16 mb-4 animate-pulse opacity-90"
+          className="mb-6 animate-pulse opacity-90"
+          style={{ maxWidth: "300px", height: "auto" }} // tamaño controlado
         />
       )}
 
