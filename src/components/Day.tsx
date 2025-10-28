@@ -1,42 +1,63 @@
+import { useState } from "react";
 import { CalendarioAutoescuelaProps } from "./Month";
-import { Plus, Minus, RotateCcw, Check } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 
 type DayProps = {
   num: Date;
-  calendarioAutoescuelaProps: CalendarioAutoescuelaProps;
+  calendarioAutoescuelaProps: CalendarioAutoescuelaProps & {
+    setClassCount?: (day: Date, count: number) => void;
+  };
 };
 
 export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
-  const { calendario, jornada, addClass, removeClass, resetClass } =
-    calendarioAutoescuelaProps;
-
+  const { calendario, jornada, setClassCount } = calendarioAutoescuelaProps;
+  const [isEditing, setIsEditing] = useState(false);
   const clasesDelDia = calendario.calculateClassesForDate(num);
 
-  // ✅ Muestra el check según el tipo de jornada
   const shouldShowCheck =
     (jornada === "completa" && clasesDelDia >= 13) ||
     (jornada === "media" && clasesDelDia >= 8);
 
-  // ✅ Colores tenues según si cumple o no
+  
   const getClassByCantidad = (): string => {
     if (shouldShowCheck)
       return "bg-green-100 border border-green-300 text-green-800";
     return "bg-blue-100 border border-blue-300 text-blue-800";
   };
 
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = parseInt(e.target.value);
+    setClassCount?.(num, value); // ✅ avisamos al padre
+    setIsEditing(false);
+  };
+
   return (
     <div
       key={num.toDateString()}
-      className={`flex items-center justify-between rounded-sm shadow-sm transition-all duration-200 ${getClassByCantidad()} w-full h-full px-[4px] sm:px-[6px]`}
+      onClick={() => setIsEditing(true)}
+      className={`flex flex-col items-center justify-center rounded-md shadow-sm transition-all duration-200 cursor-pointer ${getClassByCantidad()} w-full h-full px-[4px] sm:px-[6px]`}
     >
-      {/* IZQUIERDA: día y clases */}
-      <div className="flex flex-col items-start leading-tight">
-        <div className="font-bold text-[12px] sm:text-[14px]">
-          {num.getDate()}
-        </div>
+      
+      <div className="font-bold text-[12px] sm:text-[14px]">{num.getDate()}</div>
 
-        <div className="text-[11px] sm:text-[12px] font-medium flex items-center gap-1">
+      {isEditing ? (
+        <select
+          autoFocus
+          defaultValue={clasesDelDia}
+          onChange={handleSelectChange}
+          onBlur={() => setIsEditing(false)}
+          className="mt-1 text-[11px] sm:text-[12px] border border-gray-300 rounded px-1 py-[2px] focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        >
+          {Array.from({ length: 19 }, (_, i) => (
+            <option key={i} value={i}>
+              {i} clase{i !== 1 ? "s" : ""}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <div className="text-[11px] sm:text-[12px] font-medium flex items-center gap-1 mt-1">
           {clasesDelDia} clase{clasesDelDia !== 1 ? "s" : ""}
+          <ChevronDown size={12} className="opacity-70 ml-[2px]" />
           {shouldShowCheck && (
             <Check
               size={13}
@@ -45,32 +66,7 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
             />
           )}
         </div>
-      </div>
-
-      {/* DERECHA: botones con íconos */}
-      <div className="flex items-center justify-end gap-[4px] sm:gap-[6px]">
-        <button
-          onClick={() => addClass(num)}
-          className="text-green-600 hover:text-green-800 transition-colors"
-          title="Añadir clase"
-        >
-          <Plus size={16} />
-        </button>
-        <button
-          onClick={() => removeClass(num)}
-          className="text-yellow-600 hover:text-yellow-800 transition-colors"
-          title="Quitar clase"
-        >
-          <Minus size={16} />
-        </button>
-        <button
-          onClick={() => resetClass(num)}
-          className="text-gray-600 hover:text-gray-900 transition-colors"
-          title="Resetear clases"
-        >
-          <RotateCcw size={15} />
-        </button>
-      </div>
+      )}
     </div>
   );
 }

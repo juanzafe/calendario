@@ -122,10 +122,10 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
   useEffect(() => {
     if (!user) return;
     const classesCollectionRef = collection(
-      db,
-      "classespordia",
-      "email",
-      user.email ?? "noemail"
+       db,
+  "classespordia",
+  user.email ?? "noemail",
+  "dates"
     );
     getDocs(classesCollectionRef).then((querySnapshot) => {
       querySnapshot.docs.forEach((doc) => {
@@ -268,26 +268,53 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 
 
       <section className="bg-white rounded-xl shadow-md border border-gray-200 p-6 w-full">
-        <Month
-          calendario={calendario}
-          addClass={(day) => {
-            const updated = calendario.addClass(day);
-            setCalendario(updated);
-          }}
-          removeClass={(day) => {
-            const updated = calendario.removeClass(day);
-            setCalendario(updated);
-          }}
-          resetClass={(day) => {
-            const updated = calendario.resetClass(day);
-            setCalendario(updated);
-          }}
-          onMonthChange={(date) => setCurrentDate(date)}
-          jornada={jornada}
-          setJornada={setJornada}
-          vacationNumber={numberOfVacationForCurrentMonth}
-          onVacationChange={onVacationChange}
-        />
+       <Month
+  calendario={calendario}
+  addClass={(day) => {
+    const updated = calendario.addClass(day);
+    setCalendario(updated);
+  }}
+  removeClass={(day) => {
+    const updated = calendario.removeClass(day);
+    setCalendario(updated);
+  }}
+  resetClass={(day) => {
+    const updated = calendario.resetClass(day);
+    setCalendario(updated);
+  }}
+  setClassCount={async (day, count) => {
+    // ✅ 1️⃣ Actualiza el estado local
+    const updated = calendario.setClassCounter(day, count);
+    setCalendario(updated);
+
+    // ✅ 2️⃣ Guarda en Firebase
+    if (!user?.email) return;
+    const email = user.email;
+
+    const docRef = doc(
+      db,
+      "classespordia",
+      email,
+      "dates",
+      day.toISOString().split("T")[0]
+    );
+
+    await setDoc(
+      docRef,
+      {
+        date: day.toISOString(),
+        count,
+      },
+      { merge: true }
+    );
+  }}
+  onMonthChange={(date) => setCurrentDate(date)}
+  jornada={jornada}
+  setJornada={setJornada}
+  vacationNumber={numberOfVacationForCurrentMonth}
+  onVacationChange={onVacationChange}
+/>
+
       </section>
 
       <div className="flex justify-center mt-8">

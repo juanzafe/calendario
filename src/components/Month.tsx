@@ -15,6 +15,7 @@ export interface CalendarioAutoescuelaProps {
   setJornada: (value: "media" | "completa") => void;
   vacationNumber: number;
   onVacationChange: (days: number) => void;
+  setClassCount?: (day: Date, count: number) => void
 }
 
 export function Month(props: CalendarioAutoescuelaProps) {
