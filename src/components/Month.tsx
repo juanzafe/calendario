@@ -4,6 +4,7 @@ import { DaysContainer } from "./DaysContainer";
 import { MonthHeader } from "./MonthHeader";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import WorkingDaysCounter from "./WorkingDaysCounter";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 export interface CalendarioAutoescuelaProps {
   calendario: CalendarioAutoescuela;
@@ -15,12 +16,13 @@ export interface CalendarioAutoescuelaProps {
   setJornada: (value: "media" | "completa") => void;
   vacationNumber: number;
   onVacationChange: (days: number) => void;
-  setClassCount?: (day: Date, count: number) => void
+  setClassCount?: (day: Date, count: number) => void;
 }
 
 export function Month(props: CalendarioAutoescuelaProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [clasesDelMes, setClasesDelMes] = useState(0);
+  const isMobile = useIsMobile();
 
   const {
     calendario,
@@ -31,7 +33,6 @@ export function Month(props: CalendarioAutoescuelaProps) {
     onVacationChange,
   } = props;
 
-  // 🔹 Actualiza la fecha en el componente padre
   useEffect(() => {
     onMonthChange?.(currentDate);
     const clasesMes = calendario.totalNumberOfClassesInMonth(currentDate);
@@ -56,20 +57,32 @@ export function Month(props: CalendarioAutoescuelaProps) {
   });
 
   return (
-    <div className="w-full h-full flex flex-col bg-gradient-to-b from-emerald-50 to-white text-gray-900 rounded-xl shadow-sm border border-emerald-100 overflow-hidden">
+    <div
+      className={`
+        flex flex-col shadow-sm border border-emerald-100 overflow-hidden
+        bg-gradient-to-b from-emerald-50 to-white text-gray-900
+        w-full h-full
+        ${isMobile ? "rounded-none" : "rounded-xl"}
+      `}
+    >
       {/* 🔹 Encabezado del mes */}
-      <div className="flex justify-between items-center px-4 py-2 bg-emerald-100 text-emerald-800 border-b border-emerald-200">
+      <div
+        className={`
+          flex justify-between items-center bg-emerald-100 text-emerald-800 border-b border-emerald-200
+          ${isMobile ? "px-3 py-2" : "px-6 py-3"}
+        `}
+      >
         <button
           onClick={handlePreviousMonth}
           className="p-1.5 hover:bg-emerald-200 rounded-full transition"
           title="Mes anterior"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={isMobile ? 20 : 22} />
         </button>
 
         <div className="flex items-center gap-2 select-none">
-          <Calendar size={18} className="text-emerald-700" />
-          <h1 className="capitalize tracking-wide text-lg font-semibold">
+          <Calendar size={isMobile ? 18 : 20} className="text-emerald-700" />
+          <h1 className="capitalize tracking-wide text-base sm:text-lg font-semibold">
             {nombreMes}
           </h1>
         </div>
@@ -79,26 +92,23 @@ export function Month(props: CalendarioAutoescuelaProps) {
           className="p-1.5 hover:bg-emerald-200 rounded-full transition"
           title="Mes siguiente"
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={isMobile ? 20 : 22} />
         </button>
       </div>
 
       {/* 🔹 Cabecera de los días */}
-      <div className="flex-shrink-0">
-        <MonthHeader {...props} />
-      </div>
+      <MonthHeader {...props} />
 
       {/* 🔹 Contenedor de días */}
-      <div className="flex-grow w-full">
-        <DaysContainer
-          {...props}
-          currentDate={currentDate}
-          jornada={jornada}
-        />
-      </div>
+      <DaysContainer {...props} currentDate={currentDate} jornada={jornada} />
 
-      {/* 🔹 Contador y control de jornada/vacaciones */}
-      <div className="bg-white border-t border-gray-200 py-3 px-4">
+      {/* 🔹 Contador y control */}
+      <div
+        className={`
+          bg-white border-t border-gray-200
+          ${isMobile ? "py-3 px-3" : "py-4 px-6"}
+        `}
+      >
         <WorkingDaysCounter
           year={currentDate.getFullYear()}
           month={currentDate.getMonth()}

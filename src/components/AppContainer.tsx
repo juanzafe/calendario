@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import calendar from "../assets/calendar.png";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { CalendarioAutoescuela, refreshHolidays } from "../modelo/CalendarioAutoescuela";
 import { Month } from "./Month";
 import { useUser } from "reactfire";
@@ -23,6 +24,8 @@ interface AppContainerProps {
 
 export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
   const { data: user } = useUser();
+  const isMobile = useIsMobile();
+  
   const [calendario, setCalendario] = useState(new CalendarioAutoescuela());
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -238,84 +241,91 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
   const numberOfVacationForCurrentMonth = vacationNumber[key] ?? 0;
 
   return (
-    <div className="w-screen bg-gradient-to-b from-white to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 pt-4 pb-6">
-   <header className="flex flex-col items-center mb-4 relative">
-  {/* 🔹 Fila superior: usuario a la izquierda, correo/logout a la derecha */}
-  <div className="flex w-full items-center justify-between px-4 sm:px-8 mt-2">
-    {/* Usuario */}
-    <div className="flex items-center gap-3 text-emerald-700 font-semibold text-lg">
-      <User size={22} />
+    <div
+  className={`w-screen bg-gradient-to-b from-white to-emerald-50 text-gray-800 overflow-y-auto
+  ${isMobile ? "px-4 pt-6 pb-10 space-y-4" : "px-12 pt-6 pb-10 space-y-6"}`}
+>
+   <header
+  className={`flex flex-col items-center relative text-center
+  ${isMobile ? "mb-4 space-y-3" : "mb-8 space-y-6"}`}
+>
+  {/* Fila superior */}
+  <div
+    className={`flex w-full items-center justify-between
+    ${isMobile ? "flex-col gap-3 text-sm" : "flex-row px-8 mt-2 text-base"}`}
+  >
+    <div className="flex items-center gap-2 text-emerald-700 font-semibold">
+      <User size={isMobile ? 18 : 22} />
       <span>{user?.displayName || "Invitado"}</span>
     </div>
 
-    {/* Correo y botón de cerrar sesión */}
-    <div className="flex items-center gap-4 text-gray-600 text-sm">
-      <div className="flex items-center gap-2">
-        <Mail size={16} />
+    <div className="flex items-center gap-3 text-gray-600">
+      <div className="flex items-center gap-1">
+        <Mail size={isMobile ? 14 : 16} />
         <span>{user?.email || "Sin correo"}</span>
       </div>
       <LogOut />
     </div>
   </div>
 
-  {/* 🔹 Logo centrado visualmente pero con leve desplazamiento a la izquierda */}
   <img
     src={calendar}
     alt="Logo calendario"
-    className="w-full max-w-[300px] h-auto object-contain mt-0 -translate-x-14"
+    className={`w-full object-contain mt-0 ${
+      isMobile ? "max-w-[220px]" : "max-w-[300px] -translate-x-14"
+    }`}
   />
 </header>
 
 
-      <section className="bg-white rounded-xl shadow-md border border-gray-200 p-6 w-full">
-       <Month
-  calendario={calendario}
-  addClass={(day) => {
-    const updated = calendario.addClass(day);
-    setCalendario(updated);
-  }}
-  removeClass={(day) => {
-    const updated = calendario.removeClass(day);
-    setCalendario(updated);
-  }}
-  resetClass={(day) => {
-    const updated = calendario.resetClass(day);
-    setCalendario(updated);
-  }}
-  setClassCount={async (day, count) => {
-    // ✅ 1️⃣ Actualiza el estado local
-    const updated = calendario.setClassCounter(day, count);
-    setCalendario(updated);
 
-    // ✅ 2️⃣ Guarda en Firebase
-    if (!user?.email) return;
-    const email = user.email;
+      <section
+  className={`bg-white rounded-xl shadow-md border border-gray-200 w-full 
+  ${isMobile ? "p-0" : "p-6"}`}
+>
+  <Month
+    calendario={calendario}
+    addClass={(day) => {
+      const updated = calendario.addClass(day);
+      setCalendario(updated);
+    }}
+    removeClass={(day) => {
+      const updated = calendario.removeClass(day);
+      setCalendario(updated);
+    }}
+    resetClass={(day) => {
+      const updated = calendario.resetClass(day);
+      setCalendario(updated);
+    }}
+    setClassCount={async (day, count) => {
+      const updated = calendario.setClassCounter(day, count);
+      setCalendario(updated);
+      if (!user?.email) return;
+      const email = user.email;
+      const docRef = doc(
+        db,
+        "classespordia",
+        email,
+        "dates",
+        day.toISOString().split("T")[0]
+      );
+      await setDoc(
+        docRef,
+        {
+          date: day.toISOString(),
+          count,
+        },
+        { merge: true }
+      );
+    }}
+    onMonthChange={(date) => setCurrentDate(date)}
+    jornada={jornada}
+    setJornada={setJornada}
+    vacationNumber={numberOfVacationForCurrentMonth}
+    onVacationChange={onVacationChange}
+  />
+</section>
 
-    const docRef = doc(
-      db,
-      "classespordia",
-      email,
-      "dates",
-      day.toISOString().split("T")[0]
-    );
-
-    await setDoc(
-      docRef,
-      {
-        date: day.toISOString(),
-        count,
-      },
-      { merge: true }
-    );
-  }}
-  onMonthChange={(date) => setCurrentDate(date)}
-  jornada={jornada}
-  setJornada={setJornada}
-  vacationNumber={numberOfVacationForCurrentMonth}
-  onVacationChange={onVacationChange}
-/>
-
-      </section>
 
       <div className="flex justify-center mt-8">
         <Button

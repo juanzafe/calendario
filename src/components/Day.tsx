@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CalendarioAutoescuelaProps } from "./Month";
 import { Check, ChevronDown } from "lucide-react";
+import { useIsMobile } from "../hooks/useIsMobile"; // 👈 usamos tu hook existente
 
 type DayProps = {
   num: Date;
@@ -12,13 +13,14 @@ type DayProps = {
 export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
   const { calendario, jornada, setClassCount } = calendarioAutoescuelaProps;
   const [isEditing, setIsEditing] = useState(false);
+  const isMobile = useIsMobile(); // 👈 detecta si es móvil
+
   const clasesDelDia = calendario.calculateClassesForDate(num);
 
   const shouldShowCheck =
     (jornada === "completa" && clasesDelDia >= 13) ||
     (jornada === "media" && clasesDelDia >= 8);
 
-  
   const getClassByCantidad = (): string => {
     if (shouldShowCheck)
       return "bg-green-100 border border-green-300 text-green-800";
@@ -27,7 +29,7 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = parseInt(e.target.value);
-    setClassCount?.(num, value); // ✅ avisamos al padre
+    setClassCount?.(num, value);
     setIsEditing(false);
   };
 
@@ -37,9 +39,15 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
       onClick={() => setIsEditing(true)}
       className={`flex flex-col items-center justify-center rounded-md shadow-sm transition-all duration-200 cursor-pointer ${getClassByCantidad()} w-full h-full px-[4px] sm:px-[6px]`}
     >
-      
-      <div className="font-bold text-[12px] sm:text-[14px]">{num.getDate()}</div>
+      {/* Día + check */}
+      <div className="flex items-center justify-center gap-[3px] font-bold text-[12px] sm:text-[14px]">
+        <span>{num.getDate()}</span>
+        {shouldShowCheck && (
+          <Check size={13} className="text-green-600" strokeWidth={3} />
+        )}
+      </div>
 
+      {/* Clases del día */}
       {isEditing ? (
         <select
           autoFocus
@@ -56,15 +64,11 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
         </select>
       ) : (
         <div className="text-[11px] sm:text-[12px] font-medium flex items-center gap-1 mt-1">
-          {clasesDelDia} clase{clasesDelDia !== 1 ? "s" : ""}
+          {/* 👇 Texto compacto en móvil */}
+          {isMobile
+            ? `${clasesDelDia} cls`
+            : `${clasesDelDia} clase${clasesDelDia !== 1 ? "s" : ""}`}
           <ChevronDown size={12} className="opacity-70 ml-[2px]" />
-          {shouldShowCheck && (
-            <Check
-              size={13}
-              className="text-green-600 ml-[2px]"
-              strokeWidth={3}
-            />
-          )}
         </div>
       )}
     </div>
