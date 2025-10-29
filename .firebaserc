@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "calendario-torcal"
-  }
+    "default": "calendario-torcal",
+    "staging": "calendario-torcal"
+  },
+  "targets": {},
+  "etags": {}
 }
