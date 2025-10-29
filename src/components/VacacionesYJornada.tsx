@@ -1,5 +1,5 @@
 import React from "react";
-import { Plane } from "lucide-react";
+import { Briefcase,  Plane } from "lucide-react";
 
 
 interface VacacionesYJornadaProps {
@@ -24,8 +24,10 @@ const VacacionesYJornada: React.FC<VacacionesYJornadaProps> = ({
     onVacationChange(value);
   };
 
-  return (
-    <div className="bg-emerald-50 border border-emerald-200 rounded-md p-4 shadow-sm flex flex-col text-sm">
+ return (
+  <div className="flex flex-col gap-3 text-sm">
+    {/* Bloque de Vacaciones */}
+    <div className="bg-emerald-50 border border-emerald-200 rounded-md p-4 shadow-sm flex flex-col">
       <div className="flex items-center gap-2 text-emerald-800 font-semibold mb-2">
         <Plane size={16} />
         <span>Vacaciones</span>
@@ -50,31 +52,40 @@ const VacacionesYJornada: React.FC<VacacionesYJornadaProps> = ({
             ))}
           </select>
         </div>
-
-        {/* Toggle de jornada */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-          <span className="text-gray-700 font-medium">Jornada:</span>
-          <button
-            onClick={() =>
-              setJornada(jornada === "media" ? "completa" : "media")
-            }
-            className={`relative w-20 h-8 rounded-full transition-colors duration-300 ${
-              jornada === "completa" ? "bg-emerald-500" : "bg-emerald-200"
-            }`}
-          >
-            <span
-              className={`absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
-                jornada === "completa" ? "translate-x-12" : ""
-              }`}
-            ></span>
-            <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-emerald-900">
-              {jornada === "completa" ? "Completa" : "Media"}
-            </span>
-          </button>
-        </div>
       </div>
     </div>
-  );
-};
 
-export default VacacionesYJornada;
+    {/* Bloque de Jornada */}
+    <div className="bg-emerald-50 border border-emerald-200 rounded-md p-4 shadow-sm flex flex-col">
+      <div className="flex items-center gap-2 text-emerald-800 font-semibold mb-2">
+        <Briefcase size={16} />
+        <span>Jornada</span>
+      </div>
+
+      <div className="bg-white rounded-md border border-gray-200 p-3 flex justify-between items-center">
+        <span className="text-gray-700 font-medium">Tipo:</span>
+        <button
+          onClick={() =>
+            setJornada(jornada === "media" ? "completa" : "media")
+          }
+          className={`relative w-20 h-8 rounded-full transition-colors duration-300 ${
+            jornada === "completa" ? "bg-emerald-500" : "bg-emerald-200"
+          }`}
+        >
+          <span
+            className={`absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
+              jornada === "completa" ? "translate-x-12" : ""
+            }`}
+          ></span>
+          <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-emerald-900">
+            {jornada === "completa" ? "Completa" : "Media"}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+          )
+        }
+
+export default VacacionesYJornada

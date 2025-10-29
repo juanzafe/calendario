@@ -1,5 +1,6 @@
 
-import { GoogleAuthProvider , signInWithPopup} from "firebase/auth";
+import { getRedirectResult, GoogleAuthProvider , signInWithPopup, signInWithRedirect} from "firebase/auth";
+import { useEffect } from "react";
 
 import { useAuth } from "reactfire";
 
@@ -8,10 +9,36 @@ import { useAuth } from "reactfire";
 const LoginWithGoogle = () => {
   const auth = useAuth();
 
+  useEffect(() => {
+    // 👇 Intentamos recuperar resultado de redirección si venimos del login móvil
+    const checkRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          console.log("User signed in successfully via redirect:", result.user);
+        }
+      } catch (error) {
+        console.error("Error completing Google redirect sign-in:", error);
+      }
+    };
+    checkRedirect();
+  }, [auth]);
+
   const handleClickLoginGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+
+      // 🔹 Detectar móvil (Android/iOS)
+      const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        // En móvil → redirección (para evitar bloqueo de pop-ups)
+        await signInWithRedirect(auth, provider);
+      } else {
+        // En escritorio → pop-up normal
+        await signInWithPopup(auth, provider);
+      }
+
       console.log("User signed in successfully");
     } catch (error) {
       console.error("Error signing in with Google:", error);

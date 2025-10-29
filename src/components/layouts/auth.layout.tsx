@@ -1,33 +1,25 @@
-import { Navigate, Outlet } from "react-router"
-import { useSigninCheck } from "reactfire"
-import LoadingScreen from "../LoadingScreen"
-import calendar from "../../assets/calendar.png"
-
+import { Navigate, Outlet } from "react-router";
+import { useSigninCheck } from "reactfire";
+import LoadingScreen from "../LoadingScreen";
+import calendar from "../../assets/calendar.png";
 
 const AuthLayout = () => {
+  const { status, data: signInCheckResult, hasEmitted } = useSigninCheck();
 
 
-  const {status, data: signInCheckResult, hasEmitted}= useSigninCheck()
-
-
-  if(status==="loading" || !hasEmitted){
-    return <LoadingScreen message="Cargando3..." logo={calendar}/>
+  if (status === "loading" || !hasEmitted) {
+    return <LoadingScreen message="Cargando..." logo={calendar} />;
   }
 
-  if(status === "success" && signInCheckResult.signedIn){
-    return (
-    <Navigate
-    to="/admin"
-    replace
-      />
-    )
+  if (signInCheckResult?.user && signInCheckResult.signedIn) {
+    return <Navigate to="/admin" replace />;
   }
-
 
   return (
     <div>
-      <Outlet/> 
+      <Outlet />
     </div>
-  )
-}
-export default AuthLayout
+  );
+};
+
+export default AuthLayout;
