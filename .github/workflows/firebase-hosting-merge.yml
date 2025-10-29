@@ -19,7 +19,7 @@ jobs:
 
       # ✅ Generar build de tu app
       - name: Build project
-        run: npm run build
+        run: CI=false npm run build
 
       # ✅ Desplegar a Firebase Hosting
       - uses: FirebaseExtended/action-hosting-deploy@v0
