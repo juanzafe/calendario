@@ -10,10 +10,11 @@ import {
 import { motion } from "framer-motion";
 import VacacionesYJornada from "./VacacionesYJornada";
 
-const spanishHolidays2025: string[] = [
+export const spanishHolidays2025: string[] = [
   "2025-01-01", "2025-01-06", "2025-02-28", "2025-04-17", "2025-04-18",
   "2025-05-01", "2025-08-15", "2025-10-13", "2025-11-01", "2025-12-06",
-  "2025-12-08", "2025-12-25", "2025-08-19", "2025-09-08",
+  "2025-12-08", "2025-12-25", "2025-08-19", "2025-09-08", "2025-12-24",
+  "2025-12-31",
 ];
 
 export function getWorkingDaysWithHolidays(

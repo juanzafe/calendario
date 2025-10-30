@@ -4,7 +4,7 @@ import { useSigninCheck, useUser } from "reactfire";
 import LoadingScreen from "../LoadingScreen";
 import calendar from "../../assets/calendar.png";
 
-const AdminLayout = () => {
+const AdminLayout: React.FC = () => {
   const { status, data: signInCheckResult, hasEmitted } = useSigninCheck();
 
   if (status === "loading" || !hasEmitted) {
@@ -24,7 +24,7 @@ const AdminLayout = () => {
 
 export default AdminLayout;
 
-const AuthenticatedLayout = () => {
+const AuthenticatedLayout: React.FC = () => {
   useUser({ suspense: true });
 
   return (

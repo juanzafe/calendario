@@ -2,12 +2,21 @@ import { useState, useRef, useEffect } from "react";
 import { CalendarioAutoescuelaProps } from "./Month";
 import { Check, ChevronDown } from "lucide-react";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { getWorkingDaysWithHolidays, spanishHolidays2025 } from "./WorkingDaysCounter";
 
 type DayProps = {
   num: Date;
   calendarioAutoescuelaProps: CalendarioAutoescuelaProps & {
     setClassCount?: (day: Date, count: number) => void;
   };
+};
+
+// ✅ Formato local sin afectar el cálculo del día real
+const formatLocalDate = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
@@ -18,14 +27,29 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
 
   const clasesDelDia = calendario.calculateClassesForDate(num);
 
+  // ✅ Detección local correcta
+  const dateStr = formatLocalDate(num);
+
+  // Verificamos si es fin de semana o festivo
+  const dayOfWeek = num.getDay();
+  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+  const isHoliday = spanishHolidays2025.includes(dateStr);
+  const isWorkingDay = !isWeekend && !isHoliday;
+
   const shouldShowCheck =
     (jornada === "completa" && clasesDelDia >= 13) ||
     (jornada === "media" && clasesDelDia >= 8);
 
+  // 🎨 Colores más equilibrados
   const getClassByCantidad = (): string => {
+    if (!isWorkingDay) {
+      // 🌙 Fin de semana o festivo → rojo muy tenue
+      return "bg-red-50 border border-red-200 text-red-600";
+    }
+
     if (shouldShowCheck)
-      return "bg-green-100 border border-green-300 text-green-800";
-    return "bg-blue-100 border border-blue-300 text-blue-800";
+      return "bg-green-100 border border-green-300 text-green-800"; // ✅ Día completado
+    return "bg-blue-100 border border-blue-300 text-blue-800"; // 💼 Día laborable normal
   };
 
   const handleSelectChange = (value: number) => {
@@ -33,7 +57,7 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
     setIsEditing(false);
   };
 
-  // 👇 Cerrar al hacer clic fuera (desktop + móvil)
+  // 👇 Cerrar menú al hacer clic fuera
   useEffect(() => {
     if (!isEditing) return;
 

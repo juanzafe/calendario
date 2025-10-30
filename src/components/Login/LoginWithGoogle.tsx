@@ -1,16 +1,22 @@
 import { useEffect } from "react";
-import { GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  UserCredential,
+} from "firebase/auth";
 import { useAuth } from "reactfire";
 import calendar from "../../assets/calendar.png";
 
-const LoginWithGoogle = () => {
+const LoginWithGoogle: React.FC = () => {
   const auth = useAuth();
 
   useEffect(() => {
-    // 🔹 Verificar si venimos de un redirect
+    // 🔹 Detectar si venimos de un redirect
     const checkRedirect = async () => {
       try {
-        const result = await getRedirectResult(auth);
+        const result: UserCredential | null = await getRedirectResult(auth);
         if (result) {
           console.log("✅ Usuario autenticado vía redirect:", result.user);
         }
@@ -21,29 +27,27 @@ const LoginWithGoogle = () => {
     checkRedirect();
   }, [auth]);
 
-  const handleLogin = async () => {
+  const handleLogin = async (): Promise<void> => {
+    const provider = new GoogleAuthProvider();
+
     try {
-      const provider = new GoogleAuthProvider();
-      const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-
-      // Guardamos estado temporal de login
-      localStorage.setItem("loginInProgress", "true");
-
-      if (isMobile) {
+      // 🔹 Intentar primero popup (más estable)
+      await signInWithPopup(auth, provider);
+      console.log("✅ Login completado vía popup");
+    } catch (popupError) {
+      console.warn("⚠️ Popup bloqueado, usando redirect:", popupError);
+      try {
         await signInWithRedirect(auth, provider);
-      } else {
-        await signInWithPopup(auth, provider);
+      } catch (redirectError) {
+        console.error("❌ Error en redirect:", redirectError);
       }
-    } catch (error) {
-      console.error("Error al iniciar sesión con Google:", error);
-      localStorage.removeItem("loginInProgress");
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
       <img
-        width="500"
+        width={500}
         src={calendar}
         alt="calendario"
         className="mb-6 drop-shadow-lg rounded-2xl border border-gray-200"
@@ -54,7 +58,7 @@ const LoginWithGoogle = () => {
         className="flex flex-col items-center gap-3 bg-white/80 backdrop-blur-lg border border-gray-200 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer px-8 py-6 hover:scale-105"
       >
         <img
-          width="50"
+          width={50}
           src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000.png"
           alt="google icon"
           className="mb-2 rounded-2xl"
