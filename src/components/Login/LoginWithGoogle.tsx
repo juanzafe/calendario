@@ -1,7 +1,7 @@
 
 import { getRedirectResult, GoogleAuthProvider , signInWithPopup, signInWithRedirect} from "firebase/auth";
 import { useEffect } from "react";
-
+import calendar from  "../../assets/calendar.png";
 import { useAuth } from "reactfire";
 
 
@@ -10,7 +10,7 @@ const LoginWithGoogle = () => {
   const auth = useAuth();
 
   useEffect(() => {
-    // 👇 Intentamos recuperar resultado de redirección si venimos del login móvil
+    
     const checkRedirect = async () => {
       try {
         const result = await getRedirectResult(auth);
@@ -45,24 +45,33 @@ const LoginWithGoogle = () => {
     }
   };
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
-      <div
-        onClick={handleClickLoginGoogle}
-        className="flex flex-col items-center gap-3 bg-white/80 backdrop-blur-lg border border-gray-200 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer px-8 py-6 hover:scale-105"
-      >
-        <img
-          width="50"
-          src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000.png"
-          alt="google icon"
-          className="mb-2"
-        />
-        <h4 className="text-gray-700 font-medium text-lg">
-          Iniciar sesión con Google
-        </h4>
-      </div>
+return (
+  <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
+    {/* Logo del calendario */}
+    <img
+      width="500"
+      src={calendar}
+      alt="calendario"
+      className="mb-6 drop-shadow-lg rounded-2xl border border-gray-200"
+    />
+
+    {/* Contenedor del botón de login con Google */}
+    <div
+      onClick={handleClickLoginGoogle}
+      className="flex flex-col items-center gap-3 bg-white/80 backdrop-blur-lg border border-gray-200 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer px-8 py-6 hover:scale-105"
+    >
+      <img
+        width="50"
+        src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000.png"
+        alt="google icon"
+        className="mb-2 rounded-2xl"
+      />
+      <h4 className="text-gray-700 font-medium text-lg">
+        Iniciar sesión con Google
+      </h4>
     </div>
-  );
-};
+  </div>
+);
+}
 
 export default LoginWithGoogle;

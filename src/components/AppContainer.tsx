@@ -270,7 +270,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
     src={calendar}
     alt="Logo calendario"
     className={`w-full object-contain mt-0 ${
-      isMobile ? "max-w-[220px]" : "max-w-[300px] -translate-x-14"
+      isMobile ? "max-w-[170px]" : "max-w-[230px] -translate-x-14"
     }`}
   />
 </header>
