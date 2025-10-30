@@ -7,23 +7,16 @@ import calendar from "../../assets/calendar.png";
 const AdminLayout = () => {
   const { status, data: signInCheckResult, hasEmitted } = useSigninCheck();
 
-  // 🔹 1) Cargando autenticación
   if (status === "loading" || !hasEmitted) {
     return <LoadingScreen message="Cargando aplicación..." logo={calendar} />;
   }
 
-  // 🔹 2) Usuario no autenticado
-  if (!signInCheckResult.signedIn) {
+  if (!signInCheckResult?.signedIn) {
     return <Navigate to="/" replace />;
   }
 
-  // 🔹 3) Layout autenticado
   return (
-    <Suspense
-      fallback={
-        <LoadingScreen message="Cargando aplicación..." logo={calendar} />
-      }
-    >
+    <Suspense fallback={<LoadingScreen message="Cargando aplicación..." logo={calendar} />}>
       <AuthenticatedLayout />
     </Suspense>
   );
@@ -35,7 +28,7 @@ const AuthenticatedLayout = () => {
   useUser({ suspense: true });
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <Outlet />
     </div>
   );
