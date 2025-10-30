@@ -23,20 +23,26 @@ export function getWorkingDaysWithHolidays(
   holidays: string[] = []
 ): string[] {
   const workingDays: string[] = [];
-  const date = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0).getDate();
 
   for (let day = 1; day <= lastDay; day++) {
-    date.setDate(day);
+    const date = new Date(year, month, day);
     const dayOfWeek = date.getDay();
-    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      const formatted = date.toISOString().split("T")[0];
-      if (!holidays.includes(formatted)) workingDays.push(formatted);
+
+    // Formateo local correcto (sin UTC)
+    const formatted = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+      day
+    ).padStart(2, "0")}`;
+
+    // Excluir fines de semana y festivos
+    if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidays.includes(formatted)) {
+      workingDays.push(formatted);
     }
   }
 
   return workingDays;
 }
+
 
 interface WorkingDaysCounterProps {
   year: number;

@@ -2,21 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { CalendarioAutoescuelaProps } from "./Month";
 import { Check, ChevronDown } from "lucide-react";
 import { useIsMobile } from "../hooks/useIsMobile";
-import { getWorkingDaysWithHolidays, spanishHolidays2025 } from "./WorkingDaysCounter";
+import { spanishHolidays2025 } from "./WorkingDaysCounter";
 
 type DayProps = {
   num: Date;
   calendarioAutoescuelaProps: CalendarioAutoescuelaProps & {
     setClassCount?: (day: Date, count: number) => void;
   };
-};
-
-// ✅ Formato local sin afectar el cálculo del día real
-const formatLocalDate = (date: Date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
 };
 
 export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
@@ -27,29 +19,27 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
 
   const clasesDelDia = calendario.calculateClassesForDate(num);
 
-  // ✅ Detección local correcta
-  const dateStr = formatLocalDate(num);
+  // 🔹 Determinar si es festivo (sin contar fines de semana)
+  const formatted = `${num.getFullYear()}-${String(num.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(num.getDate()).padStart(2, "0")}`;
+  const isHoliday = spanishHolidays2025.includes(formatted);
 
-  // Verificamos si es fin de semana o festivo
-  const dayOfWeek = num.getDay();
-  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-  const isHoliday = spanishHolidays2025.includes(dateStr);
-  const isWorkingDay = !isWeekend && !isHoliday;
+  // 🔹 Fines de semana
+  const isWeekend = num.getDay() === 0 || num.getDay() === 6;
 
   const shouldShowCheck =
     (jornada === "completa" && clasesDelDia >= 13) ||
     (jornada === "media" && clasesDelDia >= 8);
 
-  // 🎨 Colores más equilibrados
+  // 🔸 Color base del fondo
   const getClassByCantidad = (): string => {
-    if (!isWorkingDay) {
-      // 🌙 Fin de semana o festivo → rojo muy tenue
-      return "bg-red-50 border border-red-200 text-red-600";
-    }
-
+    if (isWeekend)
+      return "bg-red-50 border border-red-200 text-red-700"; // 🔹 rojo muy tenue
     if (shouldShowCheck)
-      return "bg-green-100 border border-green-300 text-green-800"; // ✅ Día completado
-    return "bg-blue-100 border border-blue-300 text-blue-800"; // 💼 Día laborable normal
+      return "bg-green-100 border border-green-300 text-green-800";
+    return "bg-blue-100 border border-blue-300 text-blue-800";
   };
 
   const handleSelectChange = (value: number) => {
@@ -57,7 +47,7 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
     setIsEditing(false);
   };
 
-  // 👇 Cerrar menú al hacer clic fuera
+  // 👇 Cerrar al hacer clic fuera
   useEffect(() => {
     if (!isEditing) return;
 
@@ -88,7 +78,16 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
     >
       {/* Día + check */}
       <div className="flex items-center justify-center gap-[3px] font-bold text-[12px] sm:text-[14px]">
-        <span>{num.getDate()}</span>
+        {/* 🔸 Subrayar solo los festivos, no fines de semana */}
+        <span
+          className={
+            isHoliday
+              ? "underline decoration-red-400 decoration-2 underline-offset-2"
+              : ""
+          }
+        >
+          {num.getDate()}
+        </span>
         {shouldShowCheck && (
           <Check size={13} className="text-green-600" strokeWidth={3} />
         )}
