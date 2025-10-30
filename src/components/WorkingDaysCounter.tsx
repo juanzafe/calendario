@@ -78,7 +78,7 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
     const remaining = allWorkingDays.filter((dayStr) => {
       const dayDate = new Date(dayStr);
       dayDate.setHours(0, 0, 0, 0);
-      return dayDate >= today;
+      return dayDate > today;
     });
 
     setRemainingDays(remaining.length);
