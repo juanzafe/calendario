@@ -1,36 +1,36 @@
 import { CircularProgress } from "@mui/material";
-import React from "react";
+import type React from "react";
 import calendar from "../assets/calendar.png";
 
 interface LoadingScreenProps {
-  /** Texto mostrado debajo del spinner */
-  message?: string;
-  /** Logo opcional */
-  logo?: string;
+	/** Texto mostrado debajo del spinner */
+	message?: string;
+	/** Logo opcional */
+	logo?: string;
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({
-  message = "Cargando...",
-  logo = calendar, // 🔹 usa el logo pasado o el por defecto
+	message = "Cargando...",
+	logo = calendar, // 🔹 usa el logo pasado o el por defecto
 }) => {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white text-gray-800">
-      {logo && (
-        <img
-          src={logo}
-          alt="Logo"
-          className="mb-6 animate-pulse opacity-90"
-          style={{ maxWidth: "300px", height: "auto" }}
-        />
-      )}
+	return (
+		<div className="flex flex-col items-center justify-center min-h-screen bg-white text-gray-800">
+			{logo && (
+				<img
+					src={logo}
+					alt="Logo"
+					className="mb-6 animate-pulse opacity-90"
+					style={{ maxWidth: "300px", height: "auto" }}
+				/>
+			)}
 
-      <CircularProgress size={48} thickness={4} color="success" />
+			<CircularProgress size={48} thickness={4} color="success" />
 
-      <p className="mt-4 text-base font-medium text-gray-600 animate-pulse">
-        {message}
-      </p>
-    </div>
-  );
+			<p className="mt-4 text-base font-medium text-gray-600 animate-pulse">
+				{message}
+			</p>
+		</div>
+	);
 };
 
 export default LoadingScreen;
