@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import type { CalendarioAutoescuelaProps } from "./Month";
 import { Check, ChevronDown } from "lucide-react";
 import { useIsMobile } from "../hooks/useIsMobile";
-import { spanishHolidays2025 } from "./WorkingDaysCounter";
+import { spanishHolidays2025, spanishHolidays2026 } from "./WorkingDaysCounter";
 
 type DayProps = {
 	num: Date;
@@ -24,7 +24,7 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
 		2,
 		"0",
 	)}-${String(num.getDate()).padStart(2, "0")}`;
-	const isHoliday = spanishHolidays2025.includes(formatted);
+	const isHoliday = spanishHolidays2025.includes(formatted)  || spanishHolidays2026.includes(formatted);
 
 	// 🔹 Fines de semana
 	const isWeekend = num.getDay() === 0 || num.getDay() === 6;
@@ -80,9 +80,9 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
 				{/* 🔸 Subrayar solo los festivos, no fines de semana */}
 				<span
 					className={
-						isHoliday
-							? "underline decoration-red-400 decoration-2 underline-offset-2"
-							: ""
+						  isHoliday
+      					? "text-red-600 underline decoration-red-600 decoration-4 underline-offset-4 font-bold"
+      					: ""
 					}
 				>
 					{num.getDate()}

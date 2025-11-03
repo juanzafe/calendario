@@ -1,5 +1,6 @@
 import type React from "react";
 import { useState, useEffect } from "react";
+
 import {
 	CalendarDays,
 	Sun,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import VacacionesYJornada from "./VacacionesYJornada";
+import ReactConfetti from "react-confetti";
 
 export const spanishHolidays2025: string[] = [
 	"2025-01-01",
@@ -29,6 +31,24 @@ export const spanishHolidays2025: string[] = [
 	"2025-12-24",
 	"2025-12-31",
 ];
+
+export const spanishHolidays2026: string[] = [
+  "2026-01-01", // Año Nuevo  
+  "2026-01-06", // Epifanía del Señor  
+  "2026-02-28", // Día de Andalucía  
+  "2026-04-02", // Jueves Santo  
+  "2026-04-03", // Viernes Santo  
+  "2026-05-01", // Fiesta del Trabajo  
+  "2026-08-15", // Asunción de la Virgen  
+  "2026-08-19", // Fiesta local: incorporación de Málaga a la Corona de Castilla  
+  "2026-09-08", // Fiesta local: Virgen de la Victoria  
+  "2026-10-12", // Fiesta Nacional de España  
+  "2026-11-02", // Día de Todos los Santos (traslado al lunes)  
+  "2026-12-07", // Día de la Constitución (traslado al lunes)  
+  "2026-12-08", // Inmaculada Concepción  
+  "2026-12-25", // Navidad  
+];
+
 
 export function getWorkingDaysWithHolidays(
 	year: number,
@@ -56,6 +76,7 @@ export function getWorkingDaysWithHolidays(
 	return workingDays;
 }
 
+
 interface WorkingDaysCounterProps {
 	year: number;
 	month: number;
@@ -70,18 +91,22 @@ interface WorkingDaysCounterProps {
 const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
 	year,
 	month,
-	holidays = spanishHolidays2025,
+	holidays,
 	clasesDelMesVisible,
 	jornada,
 	setJornada,
 	vacationNumber,
 	onVacationChange,
 }) => {
+	const selectedHolidays =
+	holidays ?? (year === 2026 ? spanishHolidays2026 : spanishHolidays2025);
+
 	const [workingDays, setWorkingDays] = useState(0);
 	const [remainingDays, setRemainingDays] = useState(0);
+	const [showFireworks, setShowFireworks] = useState(false);
 
 	useEffect(() => {
-		const allWorkingDays = getWorkingDaysWithHolidays(year, month, holidays);
+		const allWorkingDays = getWorkingDaysWithHolidays(year, month, selectedHolidays);
 		setWorkingDays(allWorkingDays.length);
 
 		const today = new Date();
@@ -96,6 +121,10 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
 		setRemainingDays(remaining.length);
 	}, [year, month, holidays, jornada]);
 
+
+
+
+
 	const valorPorDia = jornada === "media" ? 7.8125 : 12.5;
 
 	const adjustedDays = Math.max(workingDays - vacationNumber, 0);
@@ -107,10 +136,25 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
 			? (adjustedClassesNeeded / adjustedRemaining).toFixed(2)
 			: "0";
 
-	const cardBase =
+		useEffect(() => {
+		if (adjustedClassesNeeded === 0 && workingDays > 0) {
+			setShowFireworks(true);
+			const timer = setTimeout(() => setShowFireworks(false), 5000);
+			return () => {
+				setShowFireworks(false);
+				clearTimeout(timer);
+		}
+	}
+		return()=> setShowFireworks(false);
+}, [adjustedClassesNeeded, workingDays, month]);
+
+
+			const cardBase =
 		"bg-emerald-50 border border-emerald-200 rounded-md p-4 shadow-sm flex flex-col text-sm";
 	console.log("==== pintando vacactionNum", vacationNumber);
 	return (
+		<>
+		{showFireworks && <ReactConfetti/>}
 		<motion.div
 			initial={{ opacity: 0, y: 6 }}
 			animate={{ opacity: 1, y: 0 }}
@@ -196,6 +240,7 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
 				/>
 			</div>
 		</motion.div>
+		</>
 	);
 };
 

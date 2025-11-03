@@ -27,7 +27,9 @@ const VacacionesYJornada: React.FC<VacacionesYJornadaProps> = ({
 			<div className="bg-emerald-50 border border-emerald-200 rounded-md p-4 shadow-sm flex flex-col">
 				<div className="flex items-center gap-2 text-emerald-800 font-semibold mb-2">
 					<Plane size={16} />
-					<span>Vacaciones</span>
+					<span>Días laborables no trabajados
+						<br/>(vacaciones o baja médica)
+						</span>
 				</div>
 
 				<div className="bg-white rounded-md border border-gray-200 p-3 flex flex-col gap-3">

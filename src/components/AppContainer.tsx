@@ -35,7 +35,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 	// ==========================
 	// 🔹 JORNADA (media / completa) — Persistente solo con Firebase
 	// ==========================
-	const [jornada, setJornada] = useState<"media" | "completa">("media");
+	const [jornada, setJornada] = useState<"media" | "completa">("completa");
 	const [isLoadingSettings, setIsLoadingSettings] = useState(true);
 
 	// Guardar jornada en Firebase cuando cambie (solo si ya se cargó)
