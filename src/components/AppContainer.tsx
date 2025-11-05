@@ -111,11 +111,11 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 					setJornada(data.jornada);
 				} else {
 					await setDoc(settingsRef, { jornada: "media" }, { merge: true });
-					setJornada("media");
+					setJornada("completa");
 				}
 			} else {
 				await setDoc(settingsRef, { jornada: "media" }, { merge: true });
-				setJornada("media");
+				setJornada("completa");
 			}
 
 			setIsLoadingSettings(false);
@@ -273,7 +273,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 					src={calendar}
 					alt="Logo calendario"
 					className={`w-full object-contain mt-0 ${
-						isMobile ? "max-w-[170px]" : "max-w-[230px] -translate-x-14"
+						isMobile ? "max-w-[140px]" : "max-w-[230px] -translate-x-14"
 					}`}
 				/>
 			</header>

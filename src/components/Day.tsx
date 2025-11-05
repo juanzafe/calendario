@@ -94,13 +94,18 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
 
 			{/* Clases del día */}
 			{!isEditing ? (
-				<div className="text-[13px] sm:text-[13px] font-medium flex items-center gap-1 mt-1">
-					{isMobile
-						? `${clasesDelDia} cls`
-						: `${clasesDelDia} clase${clasesDelDia !== 1 ? "s" : ""}`}
-					<ChevronDown size={12} className="opacity-70 ml-[2px]" />
-				</div>
-			) : (
+	<div className="text-[13px] sm:text-[13px] font-medium flex items-center gap-1 mt-1">
+		{clasesDelDia === 0 ? (
+			""
+		) : isMobile ? (
+			`${clasesDelDia} cls`
+		) : (
+			`${clasesDelDia} clase${clasesDelDia !== 1 ? "s" : ""}`
+		)}
+		<ChevronDown size={12} className="opacity-70 ml-[2px]" />
+	</div>
+) : (
+
 				<div
 					className={`absolute z-50 mt-10 bg-white border border-gray-300 rounded-md shadow-lg p-1 w-[90%] max-h-40 overflow-y-auto 
             transform transition-all duration-200 ease-out origin-top

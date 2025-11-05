@@ -51,10 +51,8 @@ export function Month(props: CalendarioAutoescuelaProps) {
 		setCurrentDate(nextMonth);
 	};
 
-	const nombreMes = currentDate.toLocaleString("es-ES", {
-		month: "long",
-		year: "numeric",
-	});
+	const nombreMes = currentDate.toLocaleString("es-ES", { month: "long" });
+const year = currentDate.getFullYear();
 
 	return (
 		<div
@@ -83,7 +81,7 @@ export function Month(props: CalendarioAutoescuelaProps) {
 				<div className="flex items-center gap-2 select-none">
 					<Calendar size={isMobile ? 18 : 20} className="text-emerald-700" />
 					<h1 className="capitalize tracking-wide text-base sm:text-lg font-semibold">
-						{nombreMes}
+  						{`${nombreMes} ${year}`}
 					</h1>
 				</div>
 
