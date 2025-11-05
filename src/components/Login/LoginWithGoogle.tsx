@@ -36,7 +36,6 @@ const LoginWithGoogle: React.FC = () => {
 		const provider = new GoogleAuthProvider();
 
 		try {
-			// 🔹 Intentar primero popup (más estable)
 			await signInWithPopup(auth, provider);
 			
 		} catch (popupError) {

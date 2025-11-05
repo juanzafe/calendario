@@ -3,15 +3,15 @@ import type React from "react";
 import calendar from "../assets/calendar.png";
 
 interface LoadingScreenProps {
-	/** Texto mostrado debajo del spinner */
+	
 	message?: string;
-	/** Logo opcional */
+	
 	logo?: string;
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({
 	message = "Cargando...",
-	logo = calendar, // 🔹 usa el logo pasado o el por defecto
+	logo = calendar, 
 }) => {
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen bg-white text-gray-800">

@@ -23,7 +23,7 @@ const VacacionesYJornada: React.FC<VacacionesYJornadaProps> = ({
 
 	return (
 		<div className="flex flex-col gap-3 text-sm">
-			{/* Bloque de Vacaciones */}
+			
 			<div className="bg-emerald-50 border border-emerald-200 rounded-md p-4 shadow-sm flex flex-col">
 				<div className="flex items-center gap-2 text-emerald-800 font-semibold mb-2">
 					<Plane size={16} />
@@ -33,7 +33,7 @@ const VacacionesYJornada: React.FC<VacacionesYJornadaProps> = ({
 				</div>
 
 				<div className="bg-white rounded-md border border-gray-200 p-3 flex flex-col gap-3">
-					{/* Selector de vacaciones */}
+					
 					<div className="flex justify-between items-center">
 						<span className="text-gray-700">
 							Días: <strong>{vacationNumber}</strong>
@@ -54,7 +54,7 @@ const VacacionesYJornada: React.FC<VacacionesYJornadaProps> = ({
 				</div>
 			</div>
 
-			{/* Bloque de Jornada */}
+			
 			<div className="bg-emerald-50 border border-emerald-200 rounded-md p-4 shadow-sm flex flex-col">
 				<div className="flex items-center gap-2 text-emerald-800 font-semibold mb-2">
 					<Briefcase size={16} />

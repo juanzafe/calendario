@@ -5,9 +5,6 @@ import { useIsMobile } from "../hooks/useIsMobile";
 interface DaysContainerProps {
 	currentDate: Date;
 	calendario: CalendarioAutoescuelaProps["calendario"];
-	addClass: CalendarioAutoescuelaProps["addClass"];
-	removeClass: CalendarioAutoescuelaProps["removeClass"];
-	resetClass: CalendarioAutoescuelaProps["resetClass"];
 	jornada: CalendarioAutoescuelaProps["jornada"];
 	setJornada: CalendarioAutoescuelaProps["setJornada"];
 	vacationNumber: CalendarioAutoescuelaProps["vacationNumber"];

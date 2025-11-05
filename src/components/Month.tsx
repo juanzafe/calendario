@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import type { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
 import { DaysContainer } from "./DaysContainer";
 import { MonthHeader } from "./MonthHeader";
@@ -8,9 +8,6 @@ import { useIsMobile } from "../hooks/useIsMobile";
 
 export interface CalendarioAutoescuelaProps {
 	calendario: CalendarioAutoescuela;
-	addClass: (day: Date) => void;
-	removeClass: (day: Date) => void;
-	resetClass: (day: Date) => void;
 	onMonthChange?: (date: Date) => void;
 	jornada: "media" | "completa";
 	setJornada: (value: "media" | "completa") => void;
@@ -37,6 +34,7 @@ export function Month(props: CalendarioAutoescuelaProps) {
 		onMonthChange?.(currentDate);
 		const clasesMes = calendario.totalNumberOfClassesInMonth(currentDate);
 		setClasesDelMes(clasesMes);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentDate, calendario]);
 
 	const handlePreviousMonth = () => {
@@ -63,7 +61,7 @@ const year = currentDate.getFullYear();
         ${isMobile ? "rounded-none" : "rounded-xl"}
       `}
 		>
-			{/* 🔹 Encabezado del mes */}
+	
 			<div
 				className={`
           flex justify-between items-center bg-emerald-100 text-emerald-800 border-b border-emerald-200
@@ -93,14 +91,8 @@ const year = currentDate.getFullYear();
 					<ChevronRight size={isMobile ? 20 : 22} />
 				</button>
 			</div>
-
-			{/* 🔹 Cabecera de los días */}
 			<MonthHeader {...props} />
-
-			{/* 🔹 Contenedor de días */}
 			<DaysContainer {...props} currentDate={currentDate} jornada={jornada} />
-
-			{/* 🔹 Contador y control */}
 			<div
 				className={`
           bg-white border-t border-gray-200

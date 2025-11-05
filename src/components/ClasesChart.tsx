@@ -19,11 +19,9 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useIsMobile } from "../hooks/useIsMobile";
 
-
 interface ClasesChartProps {
 	clasesPorDia: { dia: number; total: number; acumuladas?: number }[];
 }
-
 
 const chartTheme = {
 	gridColor: "#e5e7eb",
@@ -36,7 +34,6 @@ const chartTheme = {
 		borderRadius: 8,
 	},
 };
-
 
 export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
 	const isMobile = useIsMobile();
@@ -140,7 +137,6 @@ export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
 	);
 };
 
-
 export const MonthlyClassesChart: React.FC = () => {
 	const { data: user } = useUser();
 	const isMobile = useIsMobile();
@@ -192,27 +188,23 @@ export const MonthlyClassesChart: React.FC = () => {
 					};
 				});
 
-				
-			const ultimosSeisMeses = months.slice(-6);
+				const ultimosSeisMeses = months.slice(-6);
+				const mesesConClases = ultimosSeisMeses.filter((m) => m.total > 0);
 
-			
-			const mesesConClases = ultimosSeisMeses.filter((m) => m.total > 0);
+				const promedioUltimos6Meses =
+					mesesConClases.length > 0
+						? mesesConClases.reduce((acc, m) => acc + m.total, 0) /
+						  mesesConClases.length
+						: 0;
 
-		
-			const promedioUltimos6Meses =
-				mesesConClases.length > 0
-					? mesesConClases.reduce((acc, m) => acc + m.total, 0) /
-					  mesesConClases.length
-					: 0;
-
-			setMonthlyData(months);
-			setAverage(promedioUltimos6Meses);
-		} catch (error) {
-			console.error("Error al cargar clases mensuales:", error);
-		} finally {
-			setLoading(false);
-		}
-	};
+				setMonthlyData(months);
+				setAverage(promedioUltimos6Meses);
+			} catch (error) {
+				console.error("Error al cargar clases mensuales:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
 
 		loadMonthlyClasses();
 	}, [user]);
@@ -283,7 +275,6 @@ export const MonthlyClassesChart: React.FC = () => {
 						radius={[6, 6, 0, 0]}
 					/>
 
-					
 					{average !== null && average > 0 && (
 						<ReferenceLine
 							y={average}
@@ -304,7 +295,6 @@ export const MonthlyClassesChart: React.FC = () => {
 		</div>
 	);
 };
-
 
 export function ClasesChartPage() {
 	return (

@@ -267,18 +267,6 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 			>
 				<Month
 					calendario={calendario}
-					addClass={(day) => {
-						const updated = calendario.addClass(day);
-						setCalendario(updated);
-					}}
-					removeClass={(day) => {
-						const updated = calendario.removeClass(day);
-						setCalendario(updated);
-					}}
-					resetClass={(day) => {
-						const updated = calendario.resetClass(day);
-						setCalendario(updated);
-					}}
 					setClassCount={async (day, count) => {
 						const updated = calendario.setClassCounter(day, count);
 						setCalendario(updated);
