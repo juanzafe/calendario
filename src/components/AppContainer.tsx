@@ -31,14 +31,10 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 
 	const [calendario, setCalendario] = useState(new CalendarioAutoescuela());
 	const [currentDate, setCurrentDate] = useState(new Date());
-
-	// ==========================
-	// 🔹 JORNADA (media / completa) — Persistente solo con Firebase
-	// ==========================
 	const [jornada, setJornada] = useState<"media" | "completa">("completa");
 	const [isLoadingSettings, setIsLoadingSettings] = useState(true);
 
-	// Guardar jornada en Firebase cuando cambie (solo si ya se cargó)
+
 	useEffect(() => {
 		if (!user?.email || isLoadingSettings) return;
 
@@ -62,9 +58,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 		}
 	}, [params]);
 
-	// ==========================
-	// 🔹 VACACIONES POR MES
-	// ==========================
+
 	const [vacationNumber, setVacationNumber] = useState<Record<string, number>>(
 		{},
 	);
@@ -83,16 +77,14 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 		await setDoc(docRef, updatedVacationNumber, { merge: true });
 	};
 
-	// ==========================
-	// 🔹 CARGAR CONFIGURACIÓN DE USUARIO (vacaciones + jornada)
-	// ==========================
+
 	useEffect(() => {
 		if (!user?.email) return;
 
 		const loadUserData = async () => {
 			const email = user?.email ?? "noemail";
 
-			// 1️⃣ Cargar vacaciones
+			
 			const docRef = doc(db, "holidaysPerMonth", email);
 			const docSnap = await getDoc(docRef);
 			if (docSnap.exists()) {
@@ -102,7 +94,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 				}
 			}
 
-			// 2️⃣ Cargar jornada desde Firebase o crear si no existe
+			
 			const settingsRef = doc(db, "userSettings", email);
 			const settingsSnap = await getDoc(settingsRef);
 			if (settingsSnap.exists()) {
@@ -124,9 +116,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 		loadUserData();
 	}, [user]);
 
-	// ==========================
-	// 🔹 CLASES POR DÍA
-	// ==========================
+
 	useEffect(() => {
 		if (!user) return;
 		const classesCollectionRef = collection(
@@ -145,11 +135,10 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 				setCalendario(updatedCalendar);
 			});
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [user]);
 
-	// ==========================
-	// 🔹 GENERAR DATOS PARA GRÁFICA
-	// ==========================
+	
 	const diasDelMes = new Date(
 		currentDate.getFullYear(),
 		currentDate.getMonth() + 1,
@@ -187,16 +176,12 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 		</Button>
 	);
 
-	// ==========================
-	// 🔹 LOADING STATE
-	// ==========================
+
 	if (isLoadingSettings) {
 		return <LoadingScreen message="Cargando aplicación..." logo={calendar} />;
 	}
 
-	// ==========================
-	// 🔹 MODO GRÁFICA
-	// ==========================
+	
 	if (showOnlyChart) {
 		const nombreMes = currentDate.toLocaleString("es-ES", {
 			month: "long",
@@ -235,9 +220,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 		);
 	}
 
-	// ==========================
-	// 🔹 CALENDARIO PRINCIPAL
-	// ==========================
+	
 	const key = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
 	const numberOfVacationForCurrentMonth = vacationNumber[key] ?? 0;
 

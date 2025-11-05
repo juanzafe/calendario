@@ -19,16 +19,12 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useIsMobile } from "../hooks/useIsMobile";
 
-/* ================================================================
-   🔹 Tipado
-================================================================ */
+
 interface ClasesChartProps {
 	clasesPorDia: { dia: number; total: number; acumuladas?: number }[];
 }
 
-/* ================================================================
-   🎯 Estilo común (texto y color)
-================================================================ */
+
 const chartTheme = {
 	gridColor: "#e5e7eb",
 	textColor: "#374151",
@@ -41,9 +37,7 @@ const chartTheme = {
 	},
 };
 
-/* ================================================================
-   📈 Gráfico de clases por día
-================================================================ */
+
 export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
 	const isMobile = useIsMobile();
 	let acumuladas = 0;
@@ -89,7 +83,6 @@ export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
 						}
 					/>
 
-					{/* Ocultar eje Y en móvil */}
 					{!isMobile && (
 						<YAxis
 							tick={chartTheme.axisFont}
@@ -147,9 +140,7 @@ export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
 	);
 };
 
-/* ================================================================
-   📊 Gráfico de barras: Clases por mes + promedio últimos 6 meses
-================================================================ */
+
 export const MonthlyClassesChart: React.FC = () => {
 	const { data: user } = useUser();
 	const isMobile = useIsMobile();
@@ -201,13 +192,13 @@ export const MonthlyClassesChart: React.FC = () => {
 					};
 				});
 
-				// ✅ Obtener los últimos 6 meses
+				
 			const ultimosSeisMeses = months.slice(-6);
 
-			// ✅ Filtrar meses que tengan más de 0 clases
+			
 			const mesesConClases = ultimosSeisMeses.filter((m) => m.total > 0);
 
-			// ✅ Calcular promedio de los meses con clases
+		
 			const promedioUltimos6Meses =
 				mesesConClases.length > 0
 					? mesesConClases.reduce((acc, m) => acc + m.total, 0) /
@@ -314,9 +305,7 @@ export const MonthlyClassesChart: React.FC = () => {
 	);
 };
 
-/* ================================================================
-   🔹 Página contenedora
-================================================================ */
+
 export function ClasesChartPage() {
 	return (
 		<div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-emerald-50">

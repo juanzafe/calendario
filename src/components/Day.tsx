@@ -19,14 +19,14 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
 
 	const clasesDelDia = calendario.calculateClassesForDate(num);
 
-	// 🔹 Determinar si es festivo (sin contar fines de semana)
+
 	const formatted = `${num.getFullYear()}-${String(num.getMonth() + 1).padStart(
 		2,
 		"0",
 	)}-${String(num.getDate()).padStart(2, "0")}`;
 	const isHoliday = spanishHolidays2025.includes(formatted)  || spanishHolidays2026.includes(formatted);
 
-	// 🔹 Fines de semana
+	
 	const isWeekend = num.getDay() === 0 || num.getDay() === 6;
 
 	const shouldShowCheck =
@@ -92,7 +92,7 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
 				)}
 			</div>
 
-			{/* Clases del día */}
+		
 			{!isEditing ? (
 	<div className="text-[13px] sm:text-[13px] font-medium flex items-center gap-1 mt-1">
 		{clasesDelDia === 0 ? (
