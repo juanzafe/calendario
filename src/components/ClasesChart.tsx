@@ -202,21 +202,26 @@ export const MonthlyClassesChart: React.FC = () => {
 				});
 
 				// ✅ Obtener los últimos 6 meses
-				const ultimosSeisMeses = months.slice(-6);
+			const ultimosSeisMeses = months.slice(-6);
 
-				// ✅ Calcular promedio de los últimos 6 meses
-				const promedioUltimos6Meses =
-					ultimosSeisMeses.reduce((acc, m) => acc + m.total, 0) /
-					ultimosSeisMeses.length;
+			// ✅ Filtrar meses que tengan más de 0 clases
+			const mesesConClases = ultimosSeisMeses.filter((m) => m.total > 0);
 
-				setMonthlyData(months);
-				setAverage(promedioUltimos6Meses);
-			} catch (error) {
-				console.error("Error al cargar clases mensuales:", error);
-			} finally {
-				setLoading(false);
-			}
-		};
+			// ✅ Calcular promedio de los meses con clases
+			const promedioUltimos6Meses =
+				mesesConClases.length > 0
+					? mesesConClases.reduce((acc, m) => acc + m.total, 0) /
+					  mesesConClases.length
+					: 0;
+
+			setMonthlyData(months);
+			setAverage(promedioUltimos6Meses);
+		} catch (error) {
+			console.error("Error al cargar clases mensuales:", error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 		loadMonthlyClasses();
 	}, [user]);
@@ -287,8 +292,8 @@ export const MonthlyClassesChart: React.FC = () => {
 						radius={[6, 6, 0, 0]}
 					/>
 
-					{/* Línea de referencia del promedio (últimos 6 meses) */}
-					{!isMobile && average !== null && average > 0 && (
+					
+					{average !== null && average > 0 && (
 						<ReferenceLine
 							y={average}
 							label={{

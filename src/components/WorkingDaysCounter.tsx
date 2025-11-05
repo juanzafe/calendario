@@ -8,6 +8,7 @@ import {
 	ClipboardList,
 	GraduationCap,
 	Clock,
+	Flag,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import VacacionesYJornada from "./VacacionesYJornada";
@@ -88,6 +89,8 @@ interface WorkingDaysCounterProps {
 	onVacationChange: (days: number) => void;
 }
 
+
+
 const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
 	year,
 	month,
@@ -99,7 +102,7 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
 	onVacationChange,
 }) => {
 	const selectedHolidays =
-	holidays ?? (year === 2026 ? spanishHolidays2026 : spanishHolidays2025);
+		holidays ?? (year === 2026 ? spanishHolidays2026 : spanishHolidays2025);
 
 	const [workingDays, setWorkingDays] = useState(0);
 	const [remainingDays, setRemainingDays] = useState(0);
@@ -121,10 +124,6 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
 		setRemainingDays(remaining.length);
 	}, [year, month, holidays, jornada]);
 
-
-
-
-
 	const valorPorDia = jornada === "media" ? 7.8125 : 12.5;
 
 	const adjustedDays = Math.max(workingDays - vacationNumber, 0);
@@ -136,110 +135,154 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
 			? (adjustedClassesNeeded / adjustedRemaining).toFixed(2)
 			: "0";
 
-		useEffect(() => {
+	useEffect(() => {
 		if (adjustedClassesNeeded === 0 && workingDays > 0) {
 			setShowFireworks(true);
 			const timer = setTimeout(() => setShowFireworks(false), 5000);
 			return () => {
 				setShowFireworks(false);
 				clearTimeout(timer);
+			};
 		}
-	}
-		return()=> setShowFireworks(false);
-}, [adjustedClassesNeeded, workingDays, month]);
+		return () => setShowFireworks(false);
+	}, [adjustedClassesNeeded, workingDays, month]);
 
 
-			const cardBase =
+	
+	const pastWorkingDays = adjustedDays - adjustedRemaining;
+
+	
+	const classesShouldHaveByToday = Math.round(pastWorkingDays * valorPorDia);
+
+	
+	const differenceWithToday = clasesDelMesVisible - classesShouldHaveByToday;
+	
+
+
+	const cardBase =
 		"bg-emerald-50 border border-emerald-200 rounded-md p-4 shadow-sm flex flex-col text-sm";
-	console.log("==== pintando vacactionNum", vacationNumber);
+
 	return (
 		<>
-		{showFireworks && <ReactConfetti/>}
-		<motion.div
-			initial={{ opacity: 0, y: 6 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.3 }}
-			className="flex flex-col sm:flex-row gap-4 w-full justify-between"
-		>
-			{/* 📋 RESUMEN DEL MES */}
-			<div className="flex-1">
-				<div className={cardBase}>
-					<div className="flex items-center gap-2 text-emerald-800 font-semibold mb-2">
-						<ClipboardList size={16} />
-						<span>Resumen del mes</span>
-					</div>
-					<div className="bg-white rounded-md border border-gray-200 p-3 text-sm space-y-1.5">
-						<div className="flex justify-between">
-							<span className="flex items-center gap-1 text-gray-700">
-								<GraduationCap size={15} className="text-emerald-600" /> Clases
-								dadas:
-							</span>
-							<strong>{clasesDelMesVisible}</strong>
+			{showFireworks && <ReactConfetti />}
+			<motion.div
+				initial={{ opacity: 0, y: 6 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.3 }}
+				className="flex flex-col sm:flex-row gap-4 w-full justify-between"
+			>
+				{/* 📋 RESUMEN DEL MES */}
+				<div className="flex-1">
+					<div className={cardBase}>
+						<div className="flex items-center gap-2 text-emerald-800 font-semibold mb-2">
+							<ClipboardList size={16} />
+							<span>Resumen del mes</span>
 						</div>
+						<div className="bg-white rounded-md border border-gray-200 p-3 text-sm space-y-1.5">
+							<div className="flex justify-between">
+								<span className="flex items-center gap-1 text-gray-700">
+									<GraduationCap size={15} className="text-emerald-600" /> Clases
+									dadas:
+								</span>
+								<strong>{clasesDelMesVisible}</strong>
+							</div>
 
-						<div className="flex justify-between">
-							<span className="flex items-center gap-1 text-gray-700">
-								<CalendarDays size={15} className="text-emerald-600" /> Días
-								laborables:
-							</span>
-							<strong>{adjustedDays}</strong>
-						</div>
+							<div className="flex justify-between">
+								<span className="flex items-center gap-1 text-gray-700">
+									<CalendarDays size={15} className="text-emerald-600" /> Días
+									laborables:
+								</span>
+								<strong>{adjustedDays}</strong>
+							</div>
 
-						<div className="flex justify-between">
-							<span className="flex items-center gap-1 text-gray-700">
-								<Sun size={15} className="text-emerald-600" /> Días restantes:
-							</span>
-							<strong>{adjustedRemaining}</strong>
-						</div>
-					</div>
-				</div>
-			</div>
+							<div className="flex justify-between">
+								<span className="flex items-center gap-1 text-gray-700">
+									<Sun size={15} className="text-emerald-600" /> Días restantes:
+								</span>
+								<strong>{adjustedRemaining}</strong>
+							</div>
 
-			{/* 🎯 OBJETIVOS */}
-			<div className="flex-1">
-				<div className={cardBase}>
-					<div className="flex items-center gap-2 text-emerald-800 font-semibold mb-2">
-						<Target size={16} />
-						<span>Objetivos</span>
-					</div>
-					<div className="bg-white rounded-md border border-gray-200 p-3 text-sm space-y-1.5">
-						<div className="flex justify-between">
-							<span className="flex items-center gap-1 text-gray-700">
-								<Target size={15} className="text-emerald-600" /> Clases
-								objetivo:
-							</span>
-							<strong>{Math.round(adjustedDays * valorPorDia)}</strong>
-						</div>
-
-						<div className="flex justify-between">
-							<span className="flex items-center gap-1 text-gray-700">
-								<CalendarDays size={15} className="text-emerald-600" /> Faltan:
-							</span>
-							<strong>{adjustedClassesNeeded}</strong>
-						</div>
-
-						<div className="flex justify-between">
-							<span className="flex items-center gap-1 text-gray-700">
-								<Clock size={15} className="text-emerald-600" /> Clases por día
-								necesarias:
-							</span>
-							<strong>{adjustedClassesPerDay}</strong>
+							
+							
 						</div>
 					</div>
 				</div>
-			</div>
 
-			{/* ✈️ VACACIONES + JORNADA */}
-			<div className="flex-1">
-				<VacacionesYJornada
-					workingDays={workingDays}
-					jornada={jornada}
-					setJornada={setJornada}
-					onVacationChange={onVacationChange}
-					vacationNumber={vacationNumber}
-				/>
-			</div>
-		</motion.div>
+				{/* 🎯 OBJETIVOS */}
+<div className="flex-1">
+  <div className={cardBase}>
+    <div className="flex items-center gap-2 text-emerald-800 font-semibold mb-2">
+      <Target size={16} />
+      <span>Objetivos</span>
+    </div>
+    <div className="bg-white rounded-md border border-gray-200 p-3 text-sm space-y-1.5">
+      
+      {/* ¿Cómo vas? */}
+      <div className="flex justify-between border-gray-200">
+        <span className="flex items-center gap-1 text-gray-700">
+          <Flag size={15} className="text-emerald-600" /> ¿Cómo vas?:
+        </span>
+        <strong
+          className={
+            differenceWithToday > 0
+              ? "text-green-600"
+              : differenceWithToday < 0
+              ? "text-red-600"
+              : "text-gray-700"
+          }
+        >
+          {differenceWithToday > 0
+      ? `+${differenceWithToday} ${
+          differenceWithToday === 1 ? "clase" : "clases"
+        } por encima`
+      : differenceWithToday < 0
+      ? `${differenceWithToday} ${
+          differenceWithToday === -1 ? "clase" : "clases"
+        } por debajo`
+      : `al día`}
+        </strong>
+      </div>
+
+      {/* Clases objetivo */}
+      <div className="flex justify-between">
+        <span className="flex items-center gap-1 text-gray-700">
+          <Target size={15} className="text-emerald-600" /> Clases objetivo:
+        </span>
+        <strong>{Math.round(adjustedDays * valorPorDia)}</strong>
+      </div>
+
+      {/* Faltan */}
+      <div className="flex justify-between">
+        <span className="flex items-center gap-1 text-gray-700">
+          <CalendarDays size={15} className="text-emerald-600" /> Faltan:
+        </span>
+        <strong>{adjustedClassesNeeded}</strong>
+      </div>
+
+      {/* Clases por día necesarias */}
+      <div className="flex justify-between">
+        <span className="flex items-center gap-1 text-gray-700">
+          <Clock size={15} className="text-emerald-600" /> Clases por día necesarias:
+        </span>
+        <strong>{adjustedClassesPerDay}</strong>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+				{/* ✈️ VACACIONES + JORNADA */}
+				<div className="flex-1">
+					<VacacionesYJornada
+						workingDays={workingDays}
+						jornada={jornada}
+						setJornada={setJornada}
+						onVacationChange={onVacationChange}
+						vacationNumber={vacationNumber}
+					/>
+				</div>
+			</motion.div>
 		</>
 	);
 };

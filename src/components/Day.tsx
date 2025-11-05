@@ -94,7 +94,7 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
 
 			{/* Clases del día */}
 			{!isEditing ? (
-				<div className="text-[11px] sm:text-[12px] font-medium flex items-center gap-1 mt-1">
+				<div className="text-[13px] sm:text-[13px] font-medium flex items-center gap-1 mt-1">
 					{isMobile
 						? `${clasesDelDia} cls`
 						: `${clasesDelDia} clase${clasesDelDia !== 1 ? "s" : ""}`}
