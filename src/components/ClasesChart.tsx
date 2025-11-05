@@ -148,7 +148,7 @@ export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
 };
 
 /* ================================================================
-   📊 Gráfico de barras: Clases por mes + promedio anual
+   📊 Gráfico de barras: Clases por mes + promedio últimos 6 meses
 ================================================================ */
 export const MonthlyClassesChart: React.FC = () => {
 	const { data: user } = useUser();
@@ -201,15 +201,16 @@ export const MonthlyClassesChart: React.FC = () => {
 					};
 				});
 
-				const mesesConClases = months.filter((m) => m.total > 0);
-				const promedioAnual =
-					mesesConClases.length > 0
-						? mesesConClases.reduce((acc, m) => acc + m.total, 0) /
-							mesesConClases.length
-						: 0;
+				// ✅ Obtener los últimos 6 meses
+				const ultimosSeisMeses = months.slice(-6);
+
+				// ✅ Calcular promedio de los últimos 6 meses
+				const promedioUltimos6Meses =
+					ultimosSeisMeses.reduce((acc, m) => acc + m.total, 0) /
+					ultimosSeisMeses.length;
 
 				setMonthlyData(months);
-				setAverage(promedioAnual);
+				setAverage(promedioUltimos6Meses);
 			} catch (error) {
 				console.error("Error al cargar clases mensuales:", error);
 			} finally {
@@ -286,11 +287,12 @@ export const MonthlyClassesChart: React.FC = () => {
 						radius={[6, 6, 0, 0]}
 					/>
 
+					{/* Línea de referencia del promedio (últimos 6 meses) */}
 					{!isMobile && average !== null && average > 0 && (
 						<ReferenceLine
 							y={average}
 							label={{
-								value: `Promedio anual: ${average.toFixed(1)} clases`,
+								value: `Promedio últimos 6 meses: ${average.toFixed(1)} clases`,
 								position: "top",
 								fill: "#374151",
 								fontSize: 12,
