@@ -155,9 +155,10 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex flex-col sm:flex-row gap-4 w-full justify-between"
+        className="flex flex-col sm:flex-row gap-4 w-full justify-between
+    landscape:flex-col"
       >
-        {/* Resumen del mes */}
+        
         <div className="flex-1">
           <div className={cardBase}>
             <div className="flex items-center gap-2 text-emerald-800 font-semibold mb-2">
@@ -210,11 +211,13 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
                       : "text-gray-700"
                   }
                 >
-                  {differenceWithToday > 0
-                    ? `+${differenceWithToday} ${differenceWithToday === 1 ? "clase" : "clases"} por encima`
-                    : differenceWithToday < 0
-                    ? `${differenceWithToday} ${differenceWithToday === -1 ? "clase" : "clases"} por debajo`
-                    : `al día`}
+                  {clasesDelMesVisible === 0
+    				? "-"
+    				: differenceWithToday > 0
+    				? `+${differenceWithToday} ${differenceWithToday === 1 ? "clase" : "clases"} por encima`
+    				: differenceWithToday < 0
+    				? `${differenceWithToday} ${differenceWithToday === -1 ? "clase" : "clases"} por debajo`
+    				: `al día`}
                 </strong>
               </div>
 

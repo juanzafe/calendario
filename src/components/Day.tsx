@@ -33,12 +33,14 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
     (jornada === "completa" && clasesDelDia >= 13) ||
     (jornada === "media" && clasesDelDia >= 8);
 
-  const getClassByCantidad = (): string => {
-    if (isWeekend) return "bg-red-50 border border-red-200 text-red-700";
-    if (shouldShowCheck)
-      return "bg-green-100 border border-green-300 text-green-800";
-    return "bg-blue-100 border border-blue-300 text-blue-800";
-  };
+const getClassByCantidad = (): string => {
+  if (isWeekend) return "bg-red-50 border border-red-200 text-red-700";
+  if (shouldShowCheck)
+    return "bg-green-100 border border-green-300 text-green-800";
+  if (clasesDelDia > 0)
+    return "bg-green-50 border border-green-200 text-green-700"; 
+  return "bg-blue-100 border border-blue-300 text-blue-800";
+};
 
   const handleSelectChange = (value: number) => {
     setClassCount?.(num, value);
