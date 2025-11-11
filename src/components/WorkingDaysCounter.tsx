@@ -124,13 +124,10 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
   const adjustedRemaining = Math.max(remainingDays - vacationNumber, 0);
   const adjustedClassesNeeded =
     Math.round(adjustedDays * valorPorDia) - clasesDelMesVisible;
-  const adjustedClassesPerDay =
-    adjustedRemaining > 0
-      ? (adjustedClassesNeeded / adjustedRemaining).toFixed(2)
-      : "0";
+  const adjustedClassesPerDay = (adjustedClassesNeeded / adjustedRemaining).toFixed(2)
 
   useEffect(() => {
-    if (adjustedClassesNeeded === 0 && workingDays > 0) {
+    if (adjustedClassesNeeded <= 0 && workingDays > 0) {
       setShowFireworks(true);
       const timer = setTimeout(() => setShowFireworks(false), 5000);
       return () => {
@@ -232,14 +229,18 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
                 <span className="flex items-center gap-1 text-gray-700">
                   <CalendarDays size={15} className="text-emerald-600" /> Faltan:
                 </span>
-                <strong>{adjustedClassesNeeded}</strong>
+                <strong>{adjustedClassesNeeded > 0 ?
+                  adjustedClassesNeeded:
+                  "Ya llegaste!"}</strong>
               </div>
 
               <div className="flex justify-between">
                 <span className="flex items-center gap-1 text-gray-700">
                   <Clock size={15} className="text-emerald-600" /> Clases por día necesarias:
                 </span>
-                <strong>{adjustedClassesPerDay}</strong>
+                <strong>{Number(adjustedClassesPerDay) > 0 ?
+                  adjustedClassesPerDay : 
+                  "-"}</strong>
               </div>
             </div>
           </div>
