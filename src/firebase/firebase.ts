@@ -1,3 +1,4 @@
+
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -9,11 +10,12 @@ export const config = {
   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  
+  measurementId: "G-SX9CZ1CV2E"
 };
 
 
 
-const app = initializeApp(config);
+export const app = initializeApp(config);
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
