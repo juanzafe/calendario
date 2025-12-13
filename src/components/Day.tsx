@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import type { CalendarioAutoescuelaProps } from "./Month";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Plane } from "lucide-react";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { spanishHolidays2025, spanishHolidays2026 } from "./WorkingDaysCounter";
 
@@ -12,7 +12,7 @@ type DayProps = {
 };
 
 export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
-  const { calendario, jornada, setClassCount } = calendarioAutoescuelaProps;
+  const { calendario, jornada, setClassCount, vacationDates } = calendarioAutoescuelaProps;
   const [isEditing, setIsEditing] = useState(false);
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -23,24 +23,27 @@ export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
     2,
     "0",
   )}-${String(num.getDate()).padStart(2, "0")}`;
+  
   const isHoliday =
     spanishHolidays2025.includes(formatted) ||
     spanishHolidays2026.includes(formatted);
 
+  const isVacation = vacationDates.includes(formatted);
   const isWeekend = num.getDay() === 0 || num.getDay() === 6;
 
   const shouldShowCheck =
     (jornada === "completa" && clasesDelDia >= 13) ||
     (jornada === "media" && clasesDelDia >= 8);
 
-const getClassByCantidad = (): string => {
-  if (isWeekend) return "bg-red-50 border border-red-200 text-red-700";
-  if (shouldShowCheck)
-    return "bg-green-100 border border-green-300 text-green-800";
-  if (clasesDelDia > 0)
-    return "bg-green-50 border border-green-200 text-green-700"; 
-  return "bg-blue-100 border border-blue-300 text-blue-800";
-};
+  const getClassByCantidad = (): string => {
+    if (isVacation) return "bg-yellow-100 border border-yellow-300 text-yellow-900";
+    if (isWeekend) return "bg-red-50 border border-red-200 text-red-700";
+    if (shouldShowCheck)
+      return "bg-green-100 border border-green-300 text-green-800";
+    if (clasesDelDia > 0)
+      return "bg-green-50 border border-green-200 text-green-700"; 
+    return "bg-blue-100 border border-blue-300 text-blue-800";
+  };
 
   const handleSelectChange = (value: number) => {
     setClassCount?.(num, value);
@@ -75,7 +78,6 @@ const getClassByCantidad = (): string => {
       onClick={() => setIsEditing(true)}
       className={`relative flex flex-col items-center justify-center rounded-md shadow-sm transition-all duration-200 cursor-pointer ${getClassByCantidad()} w-full h-full px-[4px] sm:px-[6px]`}
     >
-    
       <div className="flex items-center justify-center gap-[3px] font-bold text-[12px] sm:text-[14px]">
         <span
           className={
@@ -86,22 +88,24 @@ const getClassByCantidad = (): string => {
         >
           {num.getDate()}
         </span>
-        {shouldShowCheck && (
+        {isVacation && (
+          <Plane size={13} className="text-yellow-700" strokeWidth={2.5} />
+        )}
+        {shouldShowCheck && !isVacation && (
           <Check size={13} className="text-green-600" strokeWidth={3} />
         )}
       </div>
 
-      
       {!isEditing ? (
         <div className="text-[13px] sm:text-[13px] font-medium flex items-center gap-1 mt-1">
-          {clasesDelDia === 0 ? (
-            ""
-          ) : isMobile ? (
-            `${clasesDelDia} cls`
-          ) : (
-            `${clasesDelDia} clase${clasesDelDia !== 1 ? "s" : ""}`
-          )}
-          <ChevronDown size={12} className="opacity-70 ml-[2px]" />
+          {clasesDelDia > 0 && (
+  isMobile
+    ? `${clasesDelDia} cls`
+    : `${clasesDelDia} clase${clasesDelDia !== 1 ? "s" : ""}`
+)}
+<ChevronDown size={12} className="opacity-70 ml-[2px]" />
+
+          
         </div>
       ) : (
         <div
