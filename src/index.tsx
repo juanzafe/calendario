@@ -4,10 +4,10 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./firebase/firebaseService";
-import { FirebaseAppProvider } from "reactfire";
-import FirebaseServices from "./firebase/firebaseService";
 import { BrowserRouter } from "react-router";
+import { FirebaseAppProvider } from "reactfire";
 import { config } from "./firebase/firebase";
+import FirebaseServices from "./firebase/firebaseService";
 
 const root = ReactDOM.createRoot(
 	document.getElementById("root") as HTMLElement,

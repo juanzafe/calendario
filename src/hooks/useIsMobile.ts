@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-export function useIsMobile() {
-	const getIsMobile = () =>
-		typeof window !== "undefined" ? window.innerWidth < 1000 : false;
+export const useIsMobile = () => {
+	// Envuelve getIsMobile en useCallback
+	const getIsMobile = useCallback(() => {
+		return window.matchMedia("(max-width: 768px)").matches;
+	}, []);
 
 	const [isMobile, setIsMobile] = useState(getIsMobile);
 
@@ -13,7 +15,7 @@ export function useIsMobile() {
 
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
-	}, []);
+	}, [getIsMobile]);
 
 	return isMobile;
-}
+};

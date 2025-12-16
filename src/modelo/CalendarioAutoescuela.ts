@@ -1,5 +1,5 @@
-import { db, auth } from "../firebase/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebase/firebase";
 
 function refresh(count: number, date: Date) {
 	setDoc(
@@ -34,7 +34,7 @@ export function refreshHolidays(count: number, date: Date) {
 }
 
 export class CalendarioAutoescuela {
-	getClassesByDay(currentDate: Date) {
+	getClassesByDay(_currentDate: Date) {
 		throw new Error("Method not implemented.");
 	}
 

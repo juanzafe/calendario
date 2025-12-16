@@ -2,44 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-
-html, body, #root {
-  min-height: 100%;
-  height: auto;
-  overflow-y: auto;
+html,
+body,
+#root {
+	min-height: 100%;
+	height: auto;
+	overflow-y: auto;
 }
 
 @layer base {
-  body {
-    @apply bg-gray-100 text-gray-900 h-screen w-screen overflow-hidden;
-  }
+	body {
+		@apply bg-gray-100 text-gray-900 h-screen w-screen overflow-hidden;
+	}
 }
 
 /* Componentes personalizados */
 @layer components {
- .AppContainer {
-  @apply w-screen min-h-screen flex flex-col items-center justify-start overflow-y-auto;
-}
+	.AppContainer {
+		@apply w-screen min-h-screen flex flex-col items-center justify-start overflow-y-auto;
+	}
 
-  /* 🔹 Cuadrícula de días: más compacta */
-  .DaysContainer {
-    @apply grid grid-cols-7 gap-[1px] w-full h-full bg-gray-300;
-  }
+	/* 🔹 Cuadrícula de días: más compacta */
+	.DaysContainer {
+		@apply grid grid-cols-7 gap-[1px] w-full h-full bg-gray-300;
+	}
 
-  /* 🔹 Día individual: más compacto y proporcional */
-  .Day {
-    @apply flex flex-col items-center justify-center text-green-400 bg-indigo-900 
-           rounded-sm text-sm aspect-square hover:brightness-110 transition-all duration-150;
-  }
+	/* 🔹 Día individual: más compacto y proporcional */
+	.Day {
+		@apply flex flex-col items-center justify-center text-green-400 bg-indigo-900 rounded-sm text-sm aspect-square hover:brightness-110 transition-all duration-150;
+	}
 
-  /* 🔹 Encabezado de los días (L, M, X, etc.) */
-  .MonthHeader {
-    @apply grid grid-cols-7 text-center bg-green-800 text-white font-semibold py-1 text-sm;
-  }
+	/* 🔹 Encabezado de los días (L, M, X, etc.) */
+	.MonthHeader {
+		@apply grid grid-cols-7 text-center bg-green-800 text-white font-semibold py-1 text-sm;
+	}
 
-  .DayHeader {
-    @apply flex items-center justify-center border border-green-700 py-1;
-  }
-
-
+	.DayHeader {
+		@apply flex items-center justify-center border border-green-700 py-1;
+	}
 }

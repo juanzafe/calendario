@@ -1,9 +1,9 @@
+import { getRedirectResult, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router";
-import { getRedirectResult, onAuthStateChanged } from "firebase/auth";
 import { useAuth, useSigninCheck } from "reactfire";
-import LoadingScreen from "../LoadingScreen";
 import calendar from "../../assets/calendar.png";
+import LoadingScreen from "../LoadingScreen";
 
 const AuthLayout: React.FC = () => {
 	const auth = useAuth();

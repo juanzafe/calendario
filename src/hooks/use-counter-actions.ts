@@ -1,5 +1,5 @@
-import { useFirestore, useFirestoreCollectionData, useUser } from "reactfire";
 import { collection, query, where } from "firebase/firestore";
+import { useFirestore, useFirestoreCollectionData, useUser } from "reactfire";
 import type { Counter } from "../schemas/counter.schema";
 
 export const useCounterActions = () => {
@@ -10,7 +10,7 @@ export const useCounterActions = () => {
 
 	const countersQuery = query(
 		counterCollectionRef,
-		where("userId", "==", user!.uid),
+		where("userId", "==", user?.uid),
 	);
 
 	const { status, data: counters } = useFirestoreCollectionData(countersQuery, {

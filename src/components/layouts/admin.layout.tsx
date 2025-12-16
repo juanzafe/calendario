@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { Navigate, Outlet } from "react-router";
 import { useSigninCheck, useUser } from "reactfire";
-import LoadingScreen from "../LoadingScreen";
 import calendar from "../../assets/calendar.png";
+import LoadingScreen from "../LoadingScreen";
 
 const AdminLayout: React.FC = () => {
 	const { status, data: signInCheckResult, hasEmitted } = useSigninCheck();

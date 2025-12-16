@@ -1,8 +1,8 @@
 import {
-	queryRef,
+	executeMutation,
 	executeQuery,
 	mutationRef,
-	executeMutation,
+	queryRef,
 	validateArgs,
 } from "firebase/data-connect";
 

@@ -1,134 +1,140 @@
-import { useState, useRef, useEffect } from "react";
-import type { CalendarioAutoescuelaProps } from "./Month";
+// Day.tsx
 import { Check, ChevronDown, Plane } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useIsMobile } from "../hooks/useIsMobile";
+import type { CalendarioAutoescuelaProps } from "./Month";
 import { spanishHolidays2025, spanishHolidays2026 } from "./WorkingDaysCounter";
 
 type DayProps = {
-  num: Date;
-  calendarioAutoescuelaProps: CalendarioAutoescuelaProps & {
-    setClassCount?: (day: Date, count: number) => void;
-  };
+	num: Date;
+	calendarioAutoescuelaProps: CalendarioAutoescuelaProps & {
+		setClassCount?: (day: Date, count: number) => void;
+	};
 };
 
 export function Day({ num, calendarioAutoescuelaProps }: DayProps) {
-  const { calendario, jornada, setClassCount, vacationDates } = calendarioAutoescuelaProps;
-  const [isEditing, setIsEditing] = useState(false);
-  const isMobile = useIsMobile();
-  const containerRef = useRef<HTMLDivElement | null>(null);
+	const { calendario, jornada, setClassCount, vacationDates } =
+		calendarioAutoescuelaProps;
+	const [isEditing, setIsEditing] = useState(false);
+	const isMobile = useIsMobile();
+	const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const clasesDelDia = calendario.calculateClassesForDate(num);
+	const clasesDelDia = calendario.calculateClassesForDate(num);
 
-  const formatted = `${num.getFullYear()}-${String(num.getMonth() + 1).padStart(
-    2,
-    "0",
-  )}-${String(num.getDate()).padStart(2, "0")}`;
-  
-  const isHoliday =
-    spanishHolidays2025.includes(formatted) ||
-    spanishHolidays2026.includes(formatted);
+	const formatted = `${num.getFullYear()}-${String(num.getMonth() + 1).padStart(
+		2,
+		"0",
+	)}-${String(num.getDate()).padStart(2, "0")}`;
 
-  const isVacation = vacationDates.includes(formatted);
-  const isWeekend = num.getDay() === 0 || num.getDay() === 6;
+	const isHoliday =
+		spanishHolidays2025.includes(formatted) ||
+		spanishHolidays2026.includes(formatted);
 
-  const shouldShowCheck =
-    (jornada === "completa" && clasesDelDia >= 13) ||
-    (jornada === "media" && clasesDelDia >= 8);
+	const isVacation = vacationDates.includes(formatted);
+	const isWeekend = num.getDay() === 0 || num.getDay() === 6;
 
-  const getClassByCantidad = (): string => {
-    if (isVacation) return "bg-yellow-100 border border-yellow-300 text-yellow-900";
-    if (isWeekend) return "bg-red-50 border border-red-200 text-red-700";
-    if (shouldShowCheck)
-      return "bg-green-100 border border-green-300 text-green-800";
-    if (clasesDelDia > 0)
-      return "bg-green-50 border border-green-200 text-green-700"; 
-    return "bg-blue-100 border border-blue-300 text-blue-800";
-  };
+	const shouldShowCheck =
+		(jornada === "completa" && clasesDelDia >= 13) ||
+		(jornada === "media" && clasesDelDia >= 8);
 
-  const handleSelectChange = (value: number) => {
-    setClassCount?.(num, value);
-    setIsEditing(false);
-  };
+	const getClassByCantidad = (): string => {
+		if (isVacation)
+			return "bg-yellow-100 border border-yellow-300 text-yellow-900";
+		if (isWeekend) return "bg-red-50 border border-red-200 text-red-700";
+		if (shouldShowCheck)
+			return "bg-green-100 border border-green-300 text-green-800";
+		if (clasesDelDia > 0)
+			return "bg-green-50 border border-green-200 text-green-700";
+		return "bg-blue-100 border border-blue-300 text-blue-800";
+	};
 
-  useEffect(() => {
-    if (!isEditing) return;
+	const handleSelectChange = (value: number) => {
+		setClassCount?.(num, value);
+		setIsEditing(false);
+	};
 
-    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setIsEditing(false);
-      }
-    };
+	useEffect(() => {
+		if (!isEditing) return;
 
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
+		const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+			if (
+				containerRef.current &&
+				!containerRef.current.contains(e.target as Node)
+			) {
+				setIsEditing(false);
+			}
+		};
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
-  }, [isEditing]);
+		document.addEventListener("mousedown", handleClickOutside);
+		document.addEventListener("touchstart", handleClickOutside);
 
-  return (
-    <div
-      ref={containerRef}
-      key={num.toDateString()}
-      onClick={() => setIsEditing(true)}
-      className={`relative flex flex-col items-center justify-center rounded-md shadow-sm transition-all duration-200 cursor-pointer ${getClassByCantidad()} w-full h-full px-[4px] sm:px-[6px]`}
-    >
-      <div className="flex items-center justify-center gap-[3px] font-bold text-[12px] sm:text-[14px]">
-        <span
-          className={
-            isHoliday
-              ? "text-red-600 underline decoration-red-600 decoration-4 underline-offset-4 font-bold"
-              : ""
-          }
-        >
-          {num.getDate()}
-        </span>
-        {isVacation && (
-          <Plane size={13} className="text-yellow-700" strokeWidth={2.5} />
-        )}
-        {shouldShowCheck && !isVacation && (
-          <Check size={13} className="text-green-600" strokeWidth={3} />
-        )}
-      </div>
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener("touchstart", handleClickOutside);
+		};
+	}, [isEditing]);
 
-      {!isEditing ? (
-        <div className="text-[13px] sm:text-[13px] font-medium flex items-center gap-1 mt-1">
-          {clasesDelDia > 0 && (
-  isMobile
-    ? `${clasesDelDia} cls`
-    : `${clasesDelDia} clase${clasesDelDia !== 1 ? "s" : ""}`
-)}
-<ChevronDown size={12} className="opacity-70 ml-[2px]" />
+	return (
+		<div
+			ref={containerRef}
+			className={`relative flex flex-col items-center justify-center rounded-md shadow-sm transition-all duration-200 cursor-pointer ${getClassByCantidad()} w-full h-full px-[4px] sm:px-[6px]`}
+		>
+			<div className="flex items-center justify-center gap-[3px] font-bold text-[12px] sm:text-[14px]">
+				<span
+					className={
+						isHoliday
+							? "text-red-600 underline decoration-red-600 decoration-4 underline-offset-4 font-bold"
+							: ""
+					}
+				>
+					{num.getDate()}
+				</span>
+				{isVacation && (
+					<Plane size={13} className="text-yellow-700" strokeWidth={2.5} />
+				)}
+				{shouldShowCheck && !isVacation && (
+					<Check size={13} className="text-green-600" strokeWidth={3} />
+				)}
+			</div>
 
-          
-        </div>
-      ) : (
-        <div
-          className={`absolute z-50 mt-10 bg-white border border-gray-300 rounded-md shadow-lg p-1 w-[90%] max-h-40 overflow-y-auto 
+			{!isEditing ? (
+				<button
+					type="button"
+					onClick={() => setIsEditing(true)}
+					className="text-[13px] sm:text-[13px] font-medium flex items-center gap-1 mt-1 bg-transparent"
+				>
+					{clasesDelDia > 0 &&
+						(isMobile
+							? `${clasesDelDia} cls`
+							: `${clasesDelDia} clase${clasesDelDia !== 1 ? "s" : ""}`)}
+					<ChevronDown size={12} className="opacity-70 ml-[2px]" />
+				</button>
+			) : (
+				<div
+					className={`absolute z-50 mt-10 bg-white border border-gray-300 rounded-md shadow-lg p-1 w-[90%] max-h-40 overflow-y-auto 
             transform transition-all duration-200 ease-out origin-top
             ${isEditing ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
-        >
-          {Array.from({ length: 19 }, (_, i) => (
-            <div
-              key={i}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleSelectChange(i);
-              }}
-              className={`px-2 py-1 text-[12px] rounded cursor-pointer hover:bg-emerald-100 ${
-                i === clasesDelDia ? "bg-emerald-200 font-semibold" : ""
-              }`}
-            >
-              {i} clase{i !== 1 ? "s" : ""}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+				>
+					{Array.from({ length: 19 }, (_, i) => {
+						const value = i;
+						return (
+							<button
+								key={value}
+								type="button"
+								onClick={(e) => {
+									e.stopPropagation();
+									handleSelectChange(value);
+								}}
+								className={`w-full text-left px-2 py-1 text-[12px] rounded cursor-pointer hover:bg-emerald-100 ${
+									value === clasesDelDia ? "bg-emerald-200 font-semibold" : ""
+								}`}
+							>
+								{value} clase{value !== 1 ? "s" : ""}
+							</button>
+						);
+					})}
+				</div>
+			)}
+		</div>
+	);
 }

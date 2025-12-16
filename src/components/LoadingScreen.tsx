@@ -3,15 +3,14 @@ import type React from "react";
 import calendar from "../assets/calendar.png";
 
 interface LoadingScreenProps {
-	
 	message?: string;
-	
+
 	logo?: string;
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({
 	message = "Cargando...",
-	logo = calendar, 
+	logo = calendar,
 }) => {
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen bg-white text-gray-800">

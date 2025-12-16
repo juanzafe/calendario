@@ -1,23 +1,23 @@
+import { collection, getDocs } from "firebase/firestore";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { useUser } from "reactfire";
 import {
-	LineChart,
+	Bar,
+	CartesianGrid,
+	ComposedChart,
+	Legend,
 	Line,
+	LineChart,
+	ReferenceLine,
+	ResponsiveContainer,
+	Tooltip,
 	XAxis,
 	YAxis,
-	CartesianGrid,
-	Tooltip,
-	Legend,
-	ResponsiveContainer,
-	ComposedChart,
-	Bar,
-	ReferenceLine,
 } from "recharts";
-import { AppContainer } from "./AppContainer";
-import { useUser } from "reactfire";
-import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { AppContainer } from "./AppContainer";
 
 interface ClasesChartProps {
 	clasesPorDia: { dia: number; total: number; acumuladas?: number }[];
@@ -194,7 +194,7 @@ export const MonthlyClassesChart: React.FC = () => {
 				const promedioUltimos6Meses =
 					mesesConClases.length > 0
 						? mesesConClases.reduce((acc, m) => acc + m.total, 0) /
-						  mesesConClases.length
+							mesesConClases.length
 						: 0;
 
 				setMonthlyData(months);

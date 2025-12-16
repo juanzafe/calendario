@@ -1,11 +1,18 @@
-import { auth, db } from "../firebase/firebase";
 import {
+	collection,
+	deleteDoc,
 	doc,
 	onSnapshot,
-	deleteDoc,
-	collection,
 	setDoc,
 } from "firebase/firestore";
+import { auth, db } from "../firebase/firebase";
+
+export interface ClassData {
+	id: string;
+	date: string;
+	title: string;
+	count: number;
+}
 
 export async function saveClass(
 	day: Date,
@@ -24,12 +31,14 @@ export async function deleteClass(day: Date) {
 	await deleteDoc(ref);
 }
 
-export function listenToClasses(callback: (data: any[]) => void) {
+export function listenToClasses(callback: (data: ClassData[]) => void) {
 	if (!auth.currentUser) throw new Error("Usuario no autenticado");
 	const uid = auth.currentUser.uid;
 	const ref = collection(db, "users", uid, "classes");
 	return onSnapshot(ref, (snapshot) => {
-		const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+		const data = snapshot.docs.map(
+			(doc) => ({ id: doc.id, ...doc.data() }) as ClassData,
+		);
 		callback(data);
 	});
 }
