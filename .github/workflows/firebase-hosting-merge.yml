@@ -24,9 +24,13 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-
+      
+      - name: Install Biome 
+        run: npm install -g @biomejs/biome
+     
       # 🧪 BIOME
       - name: Run Biome checks
+      
         run: npm run lint
 
       # 🏗️ BUILD
