@@ -25,6 +25,11 @@ jobs:
       - name: Install dependencies
         run: npm install --force --legacy-peer-deps
 
+      # 🧪 BIOME
+      - name: Run Biome checks
+        run: npm run lint
+
+      # 🏗️ BUILD
       - name: Build project
         run: npm run build
         env:
@@ -37,6 +42,7 @@ jobs:
           REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
           REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.REACT_APP_FIREBASE_MEASUREMENT_ID }}
 
+      # ☁️ DEPLOY
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
