@@ -23,7 +23,7 @@ jobs:
           npm pkg delete dependencies["@dataconnect/generated"]
 
       - name: Install dependencies
-        run: npm install --force --legacy-peer-deps
+        run: npm install --legacy-peer-deps
 
       # 🧪 BIOME
       - name: Run Biome checks
