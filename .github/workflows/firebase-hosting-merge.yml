@@ -1,16 +1,18 @@
-name: Deploy to Firebase Hosting on merge
+name: Deploy to Firebase Hosting
 
 on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -23,14 +25,10 @@ jobs:
           npm pkg delete dependencies["@dataconnect/generated"]
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Install Biome
-        run: npm install -g @biomejs/biome
+        run: npm ci --legacy-peer-deps
 
       # 🧪 BIOME
       - name: Run Biome checks
-
         run: npm run lint
 
       # 🏗️ BUILD
@@ -46,8 +44,9 @@ jobs:
           REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
           REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.REACT_APP_FIREBASE_MEASUREMENT_ID }}
 
-      # ☁️ DEPLOY
+      # ☁️ DEPLOY (solo en main)
       - name: Deploy to Firebase Hosting
+        if: github.ref == 'refs/heads/main'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
