@@ -39,7 +39,8 @@
 		"eject": "react-scripts eject",
 		"lint": "npx biome check .",
 		"lint:fix": "npx biome check . --write",
-		"format": "npx biome format --write ."
+		"format": "npx biome format --write .",
+		"prepare": "husky install"
 	},
 	"eslintConfig": {
 		"extends": [
@@ -62,6 +63,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "2.3.10",
 		"autoprefixer": "^10.4.21",
+		"husky": "^9.1.7",
 		"postcss": "^8.5.6",
 		"tailwindcss": "^3.4.18"
 	}
