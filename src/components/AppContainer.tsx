@@ -321,7 +321,6 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 				>
 					Ver gráfica de clases
 				</Button>
-				
 			</div>
 		</div>
 	);
