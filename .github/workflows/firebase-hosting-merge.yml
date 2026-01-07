@@ -16,18 +16,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 🟢 Node
+      # 🟢 Setup Node
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      # 🧹 Cleanup problematic local deps
+      # 🧹 Cleanup local deps
       - name: Clean local deps
         run: npm pkg delete dependencies["@dataconnect/generated"]
 
-      # 📦 Install deps
+      # 📦 Install dependencies
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
@@ -35,42 +35,58 @@ jobs:
       - name: Run Biome
         run: npm run lint
 
-      # 🏗️ Build CRA
-      - name: Build project
+      # 🏗️ BUILD — PRODUCTION
+      - name: Build project (production)
+        if: github.ref == 'refs/heads/main'
         run: npm run build
         env:
           CI: false
-          REACT_APP_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
-          REACT_APP_FIREBASE_API_KEY: ${{ github.ref == 'refs/heads/main' && secrets.REACT_APP_FIREBASE_API_KEY || secrets.STAGING_REACT_APP_FIREBASE_API_KEY }}
-          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ github.ref == 'refs/heads/main' && secrets.REACT_APP_FIREBASE_AUTH_DOMAIN || secrets.STAGING_REACT_APP_FIREBASE_AUTH_DOMAIN }}
-          REACT_APP_FIREBASE_PROJECT_ID: ${{ github.ref == 'refs/heads/main' && secrets.REACT_APP_FIREBASE_PROJECT_ID || secrets.STAGING_REACT_APP_FIREBASE_PROJECT_ID }}
-          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ github.ref == 'refs/heads/main' && secrets.REACT_APP_FIREBASE_STORAGE_BUCKET || secrets.STAGING_REACT_APP_FIREBASE_STORAGE_BUCKET }}
-          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ github.ref == 'refs/heads/main' && secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || secrets.STAGING_REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
-          REACT_APP_FIREBASE_APP_ID: ${{ github.ref == 'refs/heads/main' && secrets.REACT_APP_FIREBASE_APP_ID || secrets.STAGING_REACT_APP_FIREBASE_APP_ID }}
-          REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ github.ref == 'refs/heads/main' && secrets.REACT_APP_FIREBASE_MEASUREMENT_ID || secrets.STAGING_REACT_APP_FIREBASE_MEASUREMENT_ID }}
+          REACT_APP_ENV: production
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.REACT_APP_FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
+          REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
+          REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.REACT_APP_FIREBASE_MEASUREMENT_ID }}
 
-      # 🔍 Debug (opcional pero recomendado)
+      # 🏗️ BUILD — STAGING
+      - name: Build project (staging)
+        if: github.ref == 'refs/heads/staging'
+        run: npm run build
+        env:
+          CI: false
+          REACT_APP_ENV: staging
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.STAGING_REACT_APP_FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.STAGING_REACT_APP_FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.STAGING_REACT_APP_FIREBASE_PROJECT_ID }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.STAGING_REACT_APP_FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.STAGING_REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
+          REACT_APP_FIREBASE_APP_ID: ${{ secrets.STAGING_REACT_APP_FIREBASE_APP_ID }}
+          REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.STAGING_REACT_APP_FIREBASE_MEASUREMENT_ID }}
+
+      # 🔍 Verify build
       - name: Verify build output
         run: |
           ls -la build
           test -f build/index.html
 
-      # 🔥 Firebase CLI
+      # 🔥 Install Firebase CLI
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      # 🔐 Firebase Auth
+      # 🔐 Firebase authentication
       - name: Authenticate Firebase
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CALENDARIO_TORCAL }}' > $HOME/firebase-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/firebase-key.json" >> $GITHUB_ENV
 
-      # ☁️ Deploy PRODUCTION
+      # ☁️ DEPLOY — PRODUCTION
       - name: Deploy to Firebase (production)
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: firebase deploy --only hosting --project calendario-torcal
 
-      # ☁️ Deploy STAGING
+      # ☁️ DEPLOY — STAGING
       - name: Deploy to Firebase (staging)
         if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
         run: firebase deploy --only hosting --project calendario-torcal
