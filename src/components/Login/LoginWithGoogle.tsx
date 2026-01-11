@@ -12,7 +12,6 @@ import calendar from "../../assets/calendar.png";
 const LoginWithGoogle: React.FC = () => {
 	const auth = useAuth();
 
-
 	useEffect(() => {
 		// 🔹 Detectar si venimos de un redirect
 		const checkRedirect = async () => {
