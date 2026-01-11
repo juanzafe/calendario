@@ -82,11 +82,14 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/firebase-key.json" >> $GITHUB_ENV
 
       # ☁️ DEPLOY — PRODUCTION
-      - name: Deploy to Firebase (production)
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: firebase deploy --only hosting --project calendario-torcal
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-key.json
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CALENDARIO_TORCAL }}'
+          channelId: live
+          projectId: calendario-torcal
+        if: github.ref == 'refs/heads/main'
 
       # ☁️ DEPLOY — STAGING
       - name: Deploy to Firebase (staging)
