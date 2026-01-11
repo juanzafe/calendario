@@ -85,6 +85,8 @@ jobs:
       - name: Deploy to Firebase (production)
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: firebase deploy --only hosting --project calendario-torcal
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-key.json
 
       # ☁️ DEPLOY — STAGING
       - name: Deploy to Firebase (staging)
