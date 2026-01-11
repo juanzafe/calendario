@@ -12,8 +12,6 @@ import calendar from "../../assets/calendar.png";
 const LoginWithGoogle: React.FC = () => {
 	const auth = useAuth();
 
-	// 🔹 Leemos el client ID desde el archivo .env
-	const _googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 	useEffect(() => {
 		// 🔹 Detectar si venimos de un redirect
