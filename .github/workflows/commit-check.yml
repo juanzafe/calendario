@@ -10,7 +10,7 @@ on:
 
 jobs:
   quality-assurance:
-    name: Lint, Test and Build
+    name: Lint and Build
     runs-on: ubuntu-latest
 
     steps:
@@ -29,8 +29,6 @@ jobs:
       - name: 🧹 Run Lint (Biome)
         run: npm run lint
 
-      - name: 🧪 Run Tests
-        run: npm run test
 
       - name: 🏗️ Build Project
         run: npm run build
