@@ -37,7 +37,6 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 	const navigate = useNavigate();
 	const [params] = useSearchParams();
 
-	// Cargar parámetros de año/mes
 	useEffect(() => {
 		const year = parseInt(params.get("year") ?? "", 10);
 		const month = parseInt(params.get("month") ?? "", 10);
@@ -46,7 +45,6 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 		}
 	}, [params]);
 
-	// Guardar jornada del usuario en Firestore
 	useEffect(() => {
 		if (!user?.email || isLoadingSettings) return;
 		const saveJornada = async () => {
@@ -92,7 +90,6 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 				}
 			}
 
-		
 			const settingsRef = doc(db, "userSettings", email);
 			const settingsSnap = await getDoc(settingsRef);
 			if (settingsSnap.exists()) {
