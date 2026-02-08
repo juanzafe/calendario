@@ -13,7 +13,6 @@ const LoginWithGoogle: React.FC = () => {
 	const auth = useAuth();
 
 	useEffect(() => {
-		// 🔹 Detectar si venimos de un redirect
 		const checkRedirect = async () => {
 			try {
 				const result: UserCredential | null = await getRedirectResult(auth);

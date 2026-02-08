@@ -1,46 +1,38 @@
-# Getting Started with Create React App by Juanzafe
+🏎️ Driving School App: Management & Analytics for Instructors
+This project is a real-world tool designed to simplify the daily routine of driving instructors. It is currently in production and being used to manage lessons, track performance goals, and analyze monthly statistics effortlessly.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+🌟 What does the app do?
+The idea was born from a real need: to stop using paper or complicated Excel sheets to count daily lessons.
 
-## Available Scripts 
- 
-In the project directory, you can run:
+Lesson Management: Log each day's lessons with just a few clicks. The system knows if you've met your goal (e.g., 8 lessons for a half-shift or 13 for a full shift) and marks it visually for you.
 
-### `npm start`
+Smart Calendar: The calendar comes pre-configured with Spanish public holidays for 2025 and 2026. It also allows you to mark vacation periods so they don't negatively impact your performance statistics.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Analytics Dashboard: Thanks to the integrated charts, instructors can see their total lessons for the month, compare them with previous months, and view their 6-month average to help predict future income.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Fast & Secure Access: Direct login with Google. No need to remember new passwords, and all your data is instantly synced to the cloud.
 
-### `npm test`
+📈 Real-world Data & UX
+This isn't just a coding exercise. I integrated Google Analytics to understand how the app is actually used. Through this, I discovered that 90% of the traffic is mobile, so I optimized the entire interface and the charts to look and work perfectly on smartphones, using touch gestures and adapted menus.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+🛠️ What's "under the hood"?
+To keep the app fast and reliable, I used:
 
-### `npm run build`
+React + TypeScript: For a solid interface without type errors.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Firebase (Auth & Firestore): Handles security and real-time data storage.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Recharts: To generate the performance and accumulation charts.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Tailwind CSS: For a clean, modern, and—above all—fast mobile-first design.
 
-### `npm run eject`
+🚀 Quick Start
+Clone the repo.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Install dependencies with npm install.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Configure your .env file with your Firebase keys.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Launch the project with npm run dev.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Developed by Juan Zamudio – Real solutions for everyday problems.

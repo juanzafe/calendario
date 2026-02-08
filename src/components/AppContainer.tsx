@@ -57,13 +57,11 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 		saveJornada();
 	}, [jornada, user, isLoadingSettings]);
 
-	// Cargar datos del usuario: vacaciones y jornada
 	useEffect(() => {
 		if (!user?.email) return;
 		const loadUserData = async () => {
 			const email = user.email ?? "noemail";
 
-			// Vacaciones
 			const key = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
 			const docRef = doc(db, "holidaysPerMonth", email);
 			const docSnap = await getDoc(docRef);
@@ -94,7 +92,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 				}
 			}
 
-			// Configuración de jornada
+		
 			const settingsRef = doc(db, "userSettings", email);
 			const settingsSnap = await getDoc(settingsRef);
 			if (settingsSnap.exists()) {
@@ -115,7 +113,6 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 		loadUserData();
 	}, [user, currentDate]);
 
-	// Cargar clases por día
 	useEffect(() => {
 		if (!user) return;
 		const classesCollectionRef = collection(
@@ -135,7 +132,6 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 			});
 			setCalendario(newCalendar);
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [user, calendario]);
 
 	const handleSaveVacations = async (vacationData: {
