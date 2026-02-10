@@ -171,7 +171,6 @@ const WorkingDaysCounter: React.FC<WorkingDaysCounterProps> = ({
 	const classesShouldHaveByToday = Math.round(pastWorkingDays * valorPorDia);
 	const differenceWithToday = clasesDelMesVisible - classesShouldHaveByToday;
 
-
 	const cardBase =
 		"bg-emerald-50 border border-emerald-200 rounded-md p-4 shadow-sm flex flex-col text-sm";
 

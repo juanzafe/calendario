@@ -166,7 +166,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 			month: "long",
 			year: "numeric",
 		});
-		
+
 		return (
 			<div className="min-h-screen w-screen bg-gradient-to-b from-gray-50 to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 py-6">
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
