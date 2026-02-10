@@ -14,7 +14,7 @@ import calendar from "../assets/calendar.png";
 import { auth, db } from "../firebase/firebase";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { CalendarioAutoescuela } from "../modelo/CalendarioAutoescuela";
-import { ClasesChart } from "./ClasesChart";
+import ClasesChart from "./ClasesChart";
 import LoadingScreen from "./LoadingScreen";
 import { Month } from "./Month";
 
@@ -25,7 +25,6 @@ interface AppContainerProps {
 export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 	const { data: user } = useUser();
 	const isMobile = useIsMobile();
-
 	const [calendario, setCalendario] = useState(new CalendarioAutoescuela());
 	const [currentDate, setCurrentDate] = useState(new Date());
 	const [jornada, setJornada] = useState<"media" | "completa">("completa");
@@ -167,19 +166,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 			month: "long",
 			year: "numeric",
 		});
-		const diasDelMes = new Date(
-			currentDate.getFullYear(),
-			currentDate.getMonth() + 1,
-			0,
-		).getDate();
-		const clasesPorDia = Array.from({ length: diasDelMes }, (_, i) => {
-			const dia = new Date(
-				currentDate.getFullYear(),
-				currentDate.getMonth(),
-				i + 1,
-			);
-			return { dia: i + 1, total: calendario.calculateClassesForDate(dia) };
-		});
+		
 		return (
 			<div className="min-h-screen w-screen bg-gradient-to-b from-gray-50 to-emerald-50 text-gray-800 overflow-y-auto px-6 sm:px-12 py-6">
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
@@ -206,7 +193,7 @@ export function AppContainer({ showOnlyChart = false }: AppContainerProps) {
 						</Button>
 					</div>
 				</div>
-				<ClasesChart clasesPorDia={clasesPorDia} />
+				<ClasesChart />
 			</div>
 		);
 	}

@@ -1,305 +1,270 @@
-import { collection, getDocs } from "firebase/firestore";
-import type React from "react";
 import { useEffect, useState } from "react";
-import { useUser } from "reactfire";
 import {
-	Bar,
-	CartesianGrid,
-	ComposedChart,
-	Legend,
-	Line,
-	LineChart,
-	ReferenceLine,
-	ResponsiveContainer,
-	Tooltip,
-	XAxis,
-	YAxis,
+    Bar,
+    CartesianGrid,
+    ComposedChart,
+    Legend,
+    Line,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+    LabelList,
 } from "recharts";
-import { db } from "../firebase/firebase";
 import { useIsMobile } from "../hooks/useIsMobile";
-import { AppContainer } from "./AppContainer";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { useUser } from "reactfire";
+import { spanishHolidays2025, spanishHolidays2026, getWorkingDaysWithHolidays } from "./WorkingDaysCounter";
 
-interface ClasesChartProps {
-	clasesPorDia: { dia: number; total: number; acumuladas?: number }[];
+interface DailyData {
+    dia: number;
+    clases: number;
+}
+
+interface MonthlyData {
+    mes: string;
+    difference: number;
+    fill: string;
 }
 
 const chartTheme = {
-	gridColor: "#e5e7eb",
-	textColor: "#374151",
-	axisFont: { fontSize: 12, fontFamily: "Inter, sans-serif" },
-	legendFont: { fontSize: 13, fontFamily: "Inter, sans-serif" },
-	tooltipStyle: {
-		backgroundColor: "rgba(255, 255, 255, 0.95)",
-		border: "1px solid #d1d5db",
-		borderRadius: 8,
-	},
+    gridColor: "#e5e7eb",
+    axisFont: { fontSize: 12, fontFamily: "Inter, sans-serif" },
+    legendFont: { fontSize: 13, fontFamily: "Inter, sans-serif" },
+    tooltipStyle: {
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        border: "1px solid #d1d5db",
+        borderRadius: 8,
+    },
 };
 
-export const ClasesChart: React.FC<ClasesChartProps> = ({ clasesPorDia }) => {
-	const isMobile = useIsMobile();
-	let acumuladas = 0;
+const ClasesChart: React.FC = () => {
+    const isMobile = useIsMobile();
+    const { data: user } = useUser();
+    const [dailyData, setDailyData] = useState<DailyData[]>([]);
+    const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [currentMonth, setCurrentMonth] = useState<string>("");
 
-	const data = clasesPorDia.map((d) => {
-		acumuladas += d.total ?? 0;
-		return { dia: d.dia, total: d.total ?? 0, acumuladas };
-	});
+    useEffect(() => {
+        const loadData = async () => {
+            if (!user?.email) return;
+            
+            try {
+                const userEmail = user.email;
+                const classesCollectionRef = collection(db, "classespordia", userEmail, "dates");
+                const querySnapshot = await getDocs(classesCollectionRef);
+                const settingsRef = doc(db, "userSettings", userEmail);
+                const settingsSnap = await getDoc(settingsRef);
+                
+                // Obtener jornada (por defecto completa)
+                const jornada = settingsSnap.exists() && settingsSnap.data().jornada 
+                    ? settingsSnap.data().jornada 
+                    : "completa";
 
-	return (
-		<div className="w-full bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6">
-			<h2 className="text-lg sm:text-xl font-semibold mb-4 text-center text-emerald-700">
-				Clases diarias y acumuladas
-			</h2>
+                // Obtener mes actual desde URL params
+                const urlParams = new URLSearchParams(window.location.search);
+                const year = parseInt(urlParams.get("year") ?? new Date().getFullYear().toString(), 10);
+                const month = parseInt(urlParams.get("month") ?? new Date().getMonth().toString(), 10);
+                const currentDate = new Date(year, month, 1);
+                
+                setCurrentMonth(currentDate.toLocaleString("es-ES", { month: "long", year: "numeric" }));
 
-			<ResponsiveContainer width="100%" height={isMobile ? 260 : 340}>
-				<LineChart
-					data={data}
-					margin={{
-						top: isMobile ? 10 : 20,
-						right: isMobile ? 10 : 30,
-						bottom: isMobile ? 10 : 20,
-						left: isMobile ? 0 : 20,
-					}}
-				>
-					<CartesianGrid
-						strokeDasharray="3 3"
-						stroke={chartTheme.gridColor}
-						vertical={!isMobile}
-					/>
-					<XAxis
-						dataKey="dia"
-						tick={chartTheme.axisFont}
-						label={
-							!isMobile
-								? {
-										value: "Día del mes",
-										position: "insideBottomRight",
-										offset: -10,
-										style: chartTheme.axisFont,
-									}
-								: undefined
-						}
-					/>
+                // Preparar datos diarios del mes actual
+                const diasDelMes = new Date(year, month + 1, 0).getDate();
+                const dailyClasses: DailyData[] = [];
+                
+                for (let dia = 1; dia <= diasDelMes; dia++) {
+                    const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+                    const dayDoc = querySnapshot.docs.find(doc => {
+                        const data = doc.data();
+                        const docDate = data.date.toDate ? data.date.toDate() : new Date(data.date);
+                        return docDate.toISOString().split('T')[0] === dateKey;
+                    });
+                    
+                    dailyClasses.push({
+                        dia,
+                        clases: dayDoc ? dayDoc.data().count : 0
+                    });
+                }
+                
+                setDailyData(dailyClasses);
 
-					{!isMobile && (
-						<YAxis
-							tick={chartTheme.axisFont}
-							label={{
-								value: "Número de clases",
-								angle: -90,
-								position: "insideLeft",
-								style: chartTheme.axisFont,
-							}}
-						/>
-					)}
+                // Preparar datos mensuales (últimos 6 meses)
+                const monthlyCounts: Record<string, number> = {};
 
-					<Tooltip
-						contentStyle={chartTheme.tooltipStyle}
-						formatter={(value, name) => {
-							if (name === "total") return [value, "Clases por día"];
-							if (name === "acumuladas") return [value, "Clases acumuladas"];
-							return [value, name];
-						}}
-						labelFormatter={(label) => `Día ${label}`}
-					/>
+                querySnapshot.docs.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    if (!data.date || typeof data.count !== "number") return;
 
-					{!isMobile && (
-						<Legend
-							verticalAlign="top"
-							height={36}
-							wrapperStyle={chartTheme.legendFont}
-						/>
-					)}
+                    const date = data.date.toDate ? data.date.toDate() : new Date(data.date);
+                    const key = `${date.getFullYear()}-${date.getMonth()}`;
+                    monthlyCounts[key] = (monthlyCounts[key] || 0) + data.count;
+                });
 
-					<Line
-						type="monotone"
-						dataKey="total"
-						stroke="#0ea5e9"
-						strokeWidth={2}
-						name="Clases por día"
-						dot={{ r: isMobile ? 2 : 3 }}
-					/>
-					<Line
-						type="monotone"
-						dataKey="acumuladas"
-						stroke="#10b981"
-						strokeWidth={2}
-						name="Clases acumuladas"
-						dot={{ r: isMobile ? 2 : 3 }}
-						activeDot={{ r: isMobile ? 4 : 5 }}
-					/>
-				</LineChart>
-			</ResponsiveContainer>
+                const now = new Date();
+                const months: MonthlyData[] = [];
 
-			<div className="mt-8 sm:mt-10">
-				<MonthlyClassesChart />
-			</div>
-		</div>
-	);
+                for (let i = 5; i >= 0; i--) {
+                    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    const yearMonth = date.getFullYear();
+                    const monthMonth = date.getMonth();
+                    const key = `${yearMonth}-${monthMonth}`;
+                    const nombreMes = date.toLocaleString("es-ES", { month: "short" }).replace(".", "");
+                    
+                    const clasesMes = monthlyCounts[key] || 0;
+                    
+                    // Solo incluir meses donde se han dado clases
+                    if (clasesMes === 0) continue;
+                    
+                    // Obtener vacaciones del mes
+                    const holidaysRef = doc(db, "holidaysPerMonth", userEmail);
+                    const holidaysSnap = await getDoc(holidaysRef);
+                    let vacationDates: string[] = [];
+                    
+                    if (holidaysSnap.exists()) {
+                        const data = holidaysSnap.data();
+                        const start = data[`${key}-start`];
+                        const end = data[`${key}-end`];
+                        
+                        if (start && end) {
+                            const startDateObj = new Date(start as string);
+                            const endDateObj = new Date(end as string);
+                            const dates: string[] = [];
+                            const tempDate = new Date(startDateObj);
+                            while (tempDate <= endDateObj) {
+                                const formatted = `${tempDate.getFullYear()}-${String(tempDate.getMonth() + 1).padStart(2, "0")}-${String(tempDate.getDate()).padStart(2, "0")}`;
+                                dates.push(formatted);
+                                tempDate.setDate(tempDate.getDate() + 1);
+                            }
+                            vacationDates = dates;
+                        }
+                    }
+                    
+                    // Usar las vacaciones para calcular días laborables
+                    const selectedHolidays = yearMonth === 2026 ? spanishHolidays2026 : spanishHolidays2025;
+                    const allWorkingDays = getWorkingDaysWithHolidays(yearMonth, monthMonth, selectedHolidays, vacationDates);
+                    
+                    // Calcular días transcurridos hasta hoy
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    const pastWorkingDays = allWorkingDays.filter((dayStr) => {
+                        const dayDate = new Date(dayStr);
+                        dayDate.setHours(0, 0, 0, 0);
+                        return dayDate <= today;
+                    });
+                    
+                    // Calcular diferencia con respecto a lo que deberías llevar hoy
+                    const valorPorDia = jornada === "media" ? 7.8125 : 12.5;
+                    const classesShouldHaveByToday = Math.round(pastWorkingDays.length * valorPorDia);
+                    const difference = clasesMes - classesShouldHaveByToday;
+                    
+                    months.push({
+                        mes: nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1),
+                        difference: Math.round(difference * 10) / 10,
+                        fill: difference >= 0 ? "#10b981" : "#ef4444",
+                    });
+                }
+
+                setMonthlyData(months);
+            } catch (error) {
+                console.error("Error cargando datos de gráficas:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
+    }, [user]);
+
+    if (loading) {
+        return (
+            <div className="w-full bg-white rounded-xl shadow-md p-4 border border-gray-200 text-center">
+                <p className="text-gray-600 animate-pulse">Cargando gráficas...</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-8">
+            {/* Gráfica diaria del mes actual */}
+            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h2 className="text-lg sm:text-xl font-semibold mb-4 text-center text-emerald-700">
+                    Clases por día - {currentMonth}
+                </h2>
+                <ResponsiveContainer width="100%" height={isMobile ? 260 : 320}>
+                    <ComposedChart data={dailyData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} />
+                        <XAxis 
+                            dataKey="dia" 
+                            tick={chartTheme.axisFont}
+                            label={{ value: 'Día del mes', position: 'insideBottom', offset: -5 }}
+                        />
+                        <YAxis tick={chartTheme.axisFont} />
+                        <Tooltip
+                            contentStyle={chartTheme.tooltipStyle}
+                            formatter={(value: number) => [`${value} clases`, "Clases"]}
+                        />
+                        <Legend wrapperStyle={chartTheme.legendFont} />
+                        <Line 
+                            type="monotone" 
+                            dataKey="clases" 
+                            stroke="#10b981" 
+                            strokeWidth={2}
+                            name="Clases del día"
+                            dot={{ fill: '#10b981', r: 4 }}
+                        />
+                    </ComposedChart>
+                </ResponsiveContainer>
+            </div>
+
+            {/* Gráfica mensual de diferencias */}
+            {monthlyData.length > 0 && (
+                <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                    <h2 className="text-lg sm:text-xl font-semibold mb-4 text-center text-emerald-700">
+                        Diferencia vs objetivo (últimos 6 meses)
+                    </h2>
+                    <ResponsiveContainer width="100%" height={isMobile ? 260 : 320}>
+                        <ComposedChart data={monthlyData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} />
+                            <XAxis dataKey="mes" tick={chartTheme.axisFont} />
+                            <YAxis tick={chartTheme.axisFont} />
+                            <Tooltip
+                                contentStyle={chartTheme.tooltipStyle}
+                                formatter={(value: number) => [`${value > 0 ? "+" : ""}${value.toFixed(1)} clases`, "Diferencia"]}
+                            />
+                            <Legend wrapperStyle={chartTheme.legendFont} />
+                            <Bar 
+                                dataKey="difference" 
+                                name="Diferencia vs objetivo"
+                                isAnimationActive={false}
+                            >
+                                <LabelList
+                                    dataKey="difference"
+                                    position="top"
+                                    formatter={(value: React.ReactNode): React.ReactNode => {
+                                        if (typeof value === "number") {
+                                            return `${value > 0 ? "+" : ""}${value.toFixed(1)}`;
+                                        }
+                                        
+                                        if (typeof value === "string") {
+                                            const num = parseFloat(value);
+                                            return Number.isNaN(num) ? value : `${num > 0 ? "+" : ""}${num.toFixed(1)}`;
+                                        }
+
+                                        return value;
+                                    }}
+                                    style={{ fontSize: 11, fill: '#374151' }}
+                                />
+                            </Bar>
+                        </ComposedChart>
+                    </ResponsiveContainer>
+                </div>
+            )}
+        </div>
+    );
 };
 
-export const MonthlyClassesChart: React.FC = () => {
-	const { data: user } = useUser();
-	const isMobile = useIsMobile();
-	const [monthlyData, setMonthlyData] = useState<
-		{ mes: string; total: number }[]
-	>([]);
-	const [average, setAverage] = useState<number | null>(null);
-	const [loading, setLoading] = useState(true);
-
-	useEffect(() => {
-		if (!user?.email) return;
-
-		const loadMonthlyClasses = async () => {
-			try {
-				const email = user.email ?? "noemail";
-				const classesCollectionRef = collection(
-					db,
-					"classespordia",
-					email,
-					"dates",
-				);
-				const querySnapshot = await getDocs(classesCollectionRef);
-
-				const counts: Record<string, number> = {};
-
-				querySnapshot.docs.forEach((docSnap) => {
-					const data = docSnap.data();
-					if (!data.date || typeof data.count !== "number") return;
-
-					const date = data.date.toDate
-						? data.date.toDate()
-						: new Date(data.date);
-					const key = `${date.getFullYear()}-${date.getMonth()}`;
-					counts[key] = (counts[key] || 0) + data.count;
-				});
-
-				const now = new Date();
-				const months = Array.from({ length: 12 }).map((_, i) => {
-					const date = new Date(
-						now.getFullYear(),
-						now.getMonth() - (11 - i),
-						1,
-					);
-					const key = `${date.getFullYear()}-${date.getMonth()}`;
-					const nombreMes = date.toLocaleString("es-ES", { month: "short" });
-					return {
-						mes: nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1),
-						total: counts[key] || 0,
-					};
-				});
-
-				const ultimosSeisMeses = months.slice(-6);
-				const mesesConClases = ultimosSeisMeses.filter((m) => m.total > 0);
-
-				const promedioUltimos6Meses =
-					mesesConClases.length > 0
-						? mesesConClases.reduce((acc, m) => acc + m.total, 0) /
-							mesesConClases.length
-						: 0;
-
-				setMonthlyData(months);
-				setAverage(promedioUltimos6Meses);
-			} catch (error) {
-				console.error("Error al cargar clases mensuales:", error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		loadMonthlyClasses();
-	}, [user]);
-
-	if (loading) {
-		return (
-			<div className="w-full bg-white rounded-xl shadow-md p-4 border border-gray-200 text-center">
-				<p className="text-gray-600 animate-pulse">
-					Cargando clases mensuales...
-				</p>
-			</div>
-		);
-	}
-
-	return (
-		<div className="mt-8 sm:mt-10">
-			<h2 className="text-lg sm:text-xl font-semibold mb-4 text-center text-emerald-700">
-				Clases totales por mes
-			</h2>
-
-			<ResponsiveContainer width="100%" height={isMobile ? 260 : 340}>
-				<ComposedChart
-					data={monthlyData}
-					margin={{
-						top: isMobile ? 10 : 20,
-						right: isMobile ? 10 : 30,
-						left: isMobile ? 0 : 20,
-						bottom: 20,
-					}}
-				>
-					<CartesianGrid
-						strokeDasharray="3 3"
-						stroke={chartTheme.gridColor}
-						vertical={!isMobile}
-					/>
-					<XAxis dataKey="mes" tick={chartTheme.axisFont} />
-
-					{!isMobile && (
-						<YAxis
-							tick={chartTheme.axisFont}
-							label={{
-								value: "Clases",
-								angle: -90,
-								position: "insideLeft",
-								style: chartTheme.axisFont,
-							}}
-						/>
-					)}
-
-					<Tooltip
-						contentStyle={chartTheme.tooltipStyle}
-						formatter={(value) => [`${value} clases`, "Total del mes"]}
-						labelFormatter={(label) => `Mes: ${label}`}
-					/>
-
-					{!isMobile && (
-						<Legend
-							verticalAlign="top"
-							height={36}
-							wrapperStyle={chartTheme.legendFont}
-						/>
-					)}
-
-					<Bar
-						dataKey="total"
-						name="Clases totales"
-						fill="#10b981"
-						radius={[6, 6, 0, 0]}
-					/>
-
-					{average !== null && average > 0 && (
-						<ReferenceLine
-							y={average}
-							label={{
-								value: `Promedio últimos 6 meses: ${average.toFixed(1)} clases`,
-								position: "top",
-								fill: "#374151",
-								fontSize: 12,
-								fontFamily: "Inter, sans-serif",
-							}}
-							stroke="#3b82f6"
-							strokeDasharray="4 4"
-							strokeWidth={2}
-						/>
-					)}
-				</ComposedChart>
-			</ResponsiveContainer>
-		</div>
-	);
-};
-
-export function ClasesChartPage() {
-	return (
-		<div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-emerald-50">
-			<AppContainer showOnlyChart />
-		</div>
-	);
-}
+export default ClasesChart;

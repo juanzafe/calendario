@@ -1,6 +1,10 @@
 🏎️ Driving School App: Management & Analytics for Instructors
 This project is a real-world tool designed to simplify the daily routine of driving instructors. It is currently in production and being used to manage lessons, track performance goals, and analyze monthly statistics effortlessly.
 
+<p align="center">
+  <img src="src/assets/Animationcalendar.gif" alt="Demo de Calendario Autoescuela" width="600">
+</p>
+
 🌟 What does the app do?
 The idea was born from a real need: to stop using paper or complicated Excel sheets to count daily lessons.
 
